@@ -200,6 +200,7 @@ export default function ManageWorkUpdate() {
             <div className="container-fluid mw-100">
 
                 <SubNavbar title={"Daily Work Update List"} header={'Daily Work Update List'} />
+                
                 <div className="widget-content searchable-container list">
                     <div className="card card-body mb-2 p-3">
                         <div className="row g-2">

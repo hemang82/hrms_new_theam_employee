@@ -505,16 +505,16 @@ export const isValidInput = (inputType, text, event) => {
 
 export const textValidation = (inputType, value) => {
 
-    if (inputType === InputTypesEnum.FIRSTNAME) {
+    if (inputType === InputTypesEnum.NAME) {
         return ({
-            required: "Enter first name",
+            required: "Enter name",
             minLength: {
                 value: 2,
-                message: "Invalid first name."
+                message: "Invalid name."
             },
             pattern: {
                 value: InputRegex.FIRSTNAME_REGEX,
-                message: "First name should only contain letters"
+                message: "Name should only contain letters"
             }
         })
     }

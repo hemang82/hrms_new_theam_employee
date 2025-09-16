@@ -7,7 +7,7 @@ import Header from '../Header';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { GiKnightBanner } from "react-icons/gi";
-import { FaRegCalendarAlt, FaRegNewspaper, FaStackExchange, FaUsers } from "react-icons/fa";
+import { FaRegCalendarAlt, FaRegNewspaper, FaRegUser, FaStackExchange, FaUsers } from "react-icons/fa";
 import { TbBuildingBank, TbCoinRupee, TbDashboardFilled, TbMoneybag } from "react-icons/tb";
 import { GrBlog, GrMoney, GrSettingsOption } from "react-icons/gr";
 import { RiCoupon3Line } from "react-icons/ri";
@@ -41,7 +41,6 @@ const Slidebar = () => {
     let path = '/' + location?.pathname?.split('/')?.[1]
     const { customModel } = useSelector((state) => state.masterslice);
     const { slidebarToggle } = useSelector((state) => state.masterslice);
-    
 
     // const logouthandle = async () => {
     //     SWIT_LOGOUT().then(async (result) => {
@@ -250,20 +249,21 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-
-
-
-
-
-
-
-
                             <li className={`sidebar-item ${path === PATHS.SALARY_LIST ? "selected" : ""}`}>
                                 <Link to={PATHS.SALARY_LIST} className={`sidebar-link ${path === PATHS.SALARY_LIST ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <GrMoney style={{ fontSize: '1.2rem' }} />
                                     </span>
                                     <span className="hide-menu">Salary</span>
+                                </Link>
+                            </li>
+
+                            <li className={`sidebar-item ${path === PATHS.MY_PROFILE ? "selected" : ""}`}>
+                                <Link to={PATHS.MY_PROFILE} className={`sidebar-link ${path === PATHS.MY_PROFILE ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <FaRegUser style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Profile</span>
                                 </Link>
                             </li>
 
@@ -302,11 +302,6 @@ const Slidebar = () => {
                                     <span className="hide-menu">Leave Balance</span>
                                 </Link>
                             </li> */}
-
-
-
-
-
 
                             {/* <li className={`sidebar-item ${path === "/contact_us_list" ? "selected" : ""}`}>
                                 <Link to={'/contact_us_list'} className={`sidebar-link ${path === "/contact_us_list" ? "active" : ""}`} aria-expanded="false">

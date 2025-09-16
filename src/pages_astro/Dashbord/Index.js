@@ -88,7 +88,7 @@ const Index = () => {
         <>
             <div className="container-fluid mw-100">
                 <SubNavbar />
-                <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+                <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mt-3 ">
                     {dashboardCards?.map((card, index) => (
                         <div className="col" key={index}>
                             <div className="card shadow-sm border-1 rounded-3 h-100">
@@ -102,7 +102,7 @@ const Index = () => {
                                             alt={card.title}
                                         />
                                         <p className="card-text text-muted mb-1 fw-semibold">{card.title}</p>
-                                        <h4 className="card-title fw-semibold">{card.value}</h4>
+                                        <h4 className="card-title fw-semibold text-custom-theam">{card.value}</h4>
                                     </Link>
                                 </div>
                             </div>

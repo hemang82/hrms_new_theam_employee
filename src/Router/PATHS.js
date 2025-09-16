@@ -22,5 +22,8 @@ export const PATHS = {
 
     LIST_BIRTHDAY: '/list_birthday',
 
+    MY_PROFILE: '/my_profile',
+
+
 
 }

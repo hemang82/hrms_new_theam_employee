@@ -43,6 +43,7 @@ export const InputTypesEnum = {
     EMAIL: 'email',
     MOBILE: 'mobile_number',
     COUNTRYCODE: 'country_code',
+    DATE : 'date',
 
     PASSWORD: 'password',
     OLDPASSWORD: 'old_password',

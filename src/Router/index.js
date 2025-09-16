@@ -154,6 +154,7 @@ const Router = () => {
 
                         <Route path={PATHS.LIST_BIRTHDAY} element={<ManageBirthday />} />
 
+                        <Route path={PATHS.MY_PROFILE} element={<MyProfile />} />
 
 
                         <Route path="/emi_payment_charges" element={<ManageEMIPaymentCharges />} />
@@ -175,7 +176,6 @@ const Router = () => {
 
                         <Route path="/static_content" element={<StaticContent />} />
                         <Route path="/application_content" element={<ApplicationContent />} />
-                        <Route path="/my_profile" element={<MyProfile />} />
                         <Route path="/change_password" element={<ChangePassword />} />
 
                         <Route path="*" element={<PageNotFound />} />

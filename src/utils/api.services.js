@@ -77,6 +77,11 @@ export function AdminEmployeeList(request) {
     return AxiosClientApi.post(`/${'admin_employee'}/emp_listing`, request, true)
 }
 
+export function editEmployee(request) {
+    return AxiosClientApi.post(`/${'admin_employee'}/edit_employee`, request, true)
+}
+
+
 // ---------------------------- Leave Module  ------------------------------------------------------- 
 
 export function listLeaves(request) {
