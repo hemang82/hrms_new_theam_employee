@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { PUBLIC_URL } from '../../config/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateSlidebarToggle } from '../../Store/slices/MasterSlice';
@@ -12,14 +12,14 @@ export default function SubNavbar({ title, header, subHeader, subHeaderOnlyView 
 
     const location = useLocation();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const path = location?.pathname
     let splitPath = path?.split('/')
 
 
     const btnClick = () => {
-        console.log('button CLicked');
-        console.log('slidebarToggle', slidebarToggle);
+
         const body = document.querySelector("body");
         if (body) {
             body.setAttribute("data-sidebartype", slidebarToggle ? "mini-sidebar" : "full");
@@ -77,7 +77,11 @@ export default function SubNavbar({ title, header, subHeader, subHeaderOnlyView 
                             </nav>
                         </div>
 
-                        <div className="col-12 col-md-3 d-flex justify-content-md-end justify-content-center">
+                        <div
+                            className="col-12 col-md-3 d-flex justify-content-md-end justify-content-center cursor-pointer"
+                            onClick={() => navigate("/profile")} // 🔗 Navigate to profile page
+                            style={{ cursor: "pointer" }}
+                        >
                             <img
                                 src={`${process.env.PUBLIC_URL}/dist/images/logos/hrms_icon.png`}
                                 alt="User Avatar"
@@ -85,8 +89,22 @@ export default function SubNavbar({ title, header, subHeader, subHeaderOnlyView 
                                 style={{ width: "40px", height: "40px", objectFit: "cover" }}
                             />
                             <div className="d-none d-sm-block text-end">
-                                {userDetails?.name && <div className="fw-semibold mb-0 text-capitalize" style={{ fontSize: "0.9rem" }}>{userDetails?.name}</div>}
-                                {userDetails?.employee_id && <div className="fw-semibold mb-0 text-capitalize text-custom-theam" style={{ fontSize: "0.9rem" }}>{userDetails?.employee_id}</div>}
+                                {userDetails?.name && (
+                                    <div
+                                        className="fw-semibold mb-0 text-capitalize"
+                                        style={{ fontSize: "0.9rem" }}
+                                    >
+                                        {userDetails?.name}
+                                    </div>
+                                )}
+                                {userDetails?.employee_id && (
+                                    <div
+                                        className="fw-semibold mb-0 text-capitalize text-custom-theam"
+                                        style={{ fontSize: "0.9rem" }}
+                                    >
+                                        {userDetails?.employee_id}
+                                    </div>
+                                )}
                             </div>
                         </div>
 

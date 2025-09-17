@@ -18,7 +18,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getDailyTaskListThunk, getSalaryListThunk, getSaturdayListThunk, setLoader, updateDailyTaskList, updateSaterdayList } from '../../Store/slices/MasterSlice';
 import Constatnt, { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, formatDate, formatDateDyjs, getAllStatusObject, getLoanStatusObject, getSaturdayOrdinal, openModel } from '../../config/commonFunction';
+import { closeModel, disableFutureDates, formatDate, formatDateDyjs, getAllStatusObject, getLoanStatusObject, getSaturdayOrdinal, openModel } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
@@ -215,7 +215,6 @@ export default function ManageSaturday() {
         dispatch(getSaturdayListThunk(request));
     };
 
-    // Toggle function
     const handleToggle = (rowData) => {
         console.log('rowData', rowData);
         let submitData = {
@@ -278,6 +277,7 @@ export default function ManageSaturday() {
                                             date: date,
                                         });
                                     }}
+                                    disabledDate={disableFutureDates}
                                 />
                             </div>
                         </div>
@@ -318,7 +318,6 @@ export default function ManageSaturday() {
                                 <Column field="date" header="Week Day" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='ms-4 me-2'>{getSaturdayOrdinal(rowData.date) || '-'}</span>
                                 )} />
-
 
                                 <Column field="type" data-pc-section="root" header="Day Type" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <>

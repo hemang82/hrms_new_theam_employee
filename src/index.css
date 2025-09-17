@@ -545,8 +545,16 @@
     color: #1F7494 !important
   }
 
-  .breadcrumb .breadcrumb-item{
+  .breadcrumb .breadcrumb-item {
     font-size: 16px !important;
     font-weight: 500 !important;
-  ;
-  } 
+    ;
+  }
+
+  .red_border {
+    background: #ff6b6b1c !important;
+  }
+
+  .green_border {
+    background: #1f749417 !important;
+  }

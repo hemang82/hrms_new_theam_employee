@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { logoutRedirection, openModel, closeModel, formatDateDyjs } from '../../config/commonFunction';
+import { logoutRedirection, openModel, closeModel, formatDateDyjs, dayjsDateFormat } from '../../config/commonFunction';
 import Constatnt, { PUBLIC_URL } from '../../config/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from "react-i18next";
@@ -73,7 +73,10 @@ const Header = ({ page_name }) => {
                 };
                 await Promise.all([
                     dispatch(getUserDetailsThunk()),
-                    dispatch(getDailyTaskListThunk(request)),
+                    dispatch(getDailyTaskListThunk({
+                        start_date: dayjsDateFormat(dayjs().startOf("month"), DateFormat?.DATE_DASH_TIME_FORMAT) || null,
+                        end_date: dayjsDateFormat(dayjs(), DateFormat?.DATE_DASH_TIME_FORMAT) || null
+                    })),
                     dispatch(getlistLeavesThunk(request)),
                     dispatch(getSaturdayListThunk({ year: new Date().getFullYear(), month: new Date().getMonth() + 1 })),
                     dispatch(getHolidayListThunk()),

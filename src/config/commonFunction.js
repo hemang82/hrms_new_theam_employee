@@ -695,12 +695,18 @@ export const QuillContentRowWise = (content) => {
     );
 };
 
-// export const Codes = {
-//     SUCCESS: 1,
-//     INVALID_OR_FAIL: 0,
-//     NO_DATA_FOUND: 2,
-//     DELETE_ACCOUNT: 3,
-//     USER_SESSION_EXPIRE: -1,
-// };
+// Disable future dates (only past & today allowed)
+export const disableFutureDates = (current) => {
+  return current && current > dayjs().endOf("day");
+};
 
+// Disable past dates (only today & future allowed)
+export const disablePastDates = (current) => {
+  return current && current < dayjs().startOf("day");
+};
+
+// Disable dates between two ranges
+export const disableBeforeStartDate = (startDate) => (current) => {
+  return current && current < dayjs(startDate).startOf("day");
+};
 // --------------------------------- input validation ------------------------------------

@@ -8,7 +8,7 @@ export const DateFormat = {
     DATE_YEAR_WISE_SLASH_TIME_FORMAT: "DD-MM-YYYY h:mm A", // 2024-06-12 3:45 PM
     DATE_TIME_FORMAT: "DD MMMM YYYY", // 12 Jun 2024, 03:45 PM
     DATE_TIME_MONTH_WISE_FORMAT: "MMM DD YYYY, hh:mm A", // Jun 12 2024, 03:45 PM
-    DATE_DASH_TIME_FORMAT: "YYYY-DD-MM", // 12-6-2024 3:45 PM
+    DATE_DASH_TIME_FORMAT: "YYYY-MM-DD", // 12-6-2024 3:45 PM
     DATE_LOCAL_DASH_TIME_FORMAT: "YYYY-MM-DD", // 2024-06-12T15:45
     DATE_DOT_TIME_FORMAT: "DD-MM-YYYY H:mm", // 12.06.2024 15:45
     DATE_WEEK_MONTH_NAME_FORMAT: "DD-MM-YYYY , ddd",
@@ -43,7 +43,7 @@ export const InputTypesEnum = {
     EMAIL: 'email',
     MOBILE: 'mobile_number',
     COUNTRYCODE: 'country_code',
-    DATE : 'date',
+    DATE: 'date',
 
     PASSWORD: 'password',
     OLDPASSWORD: 'old_password',

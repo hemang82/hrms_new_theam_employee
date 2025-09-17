@@ -18,7 +18,7 @@ import { FaNimblr } from "react-icons/fa";
 import { BiCategory } from "react-icons/bi";
 import { RiSecurePaymentLine } from "react-icons/ri";
 import { MdOutlineContactMail, MdOutlineContactPhone, MdOutlineContentPaste, MdOutlineCoPresent, MdOutlineDateRange } from "react-icons/md";
-import { BsCalendarDate, BsCardHeading } from "react-icons/bs";
+import { BsCalendarDate, BsCardHeading, BsPersonWorkspace } from "react-icons/bs";
 import { ModelName } from '../../config/commonVariable';
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 import Model from '../../component/Model';
@@ -208,7 +208,7 @@ const Slidebar = () => {
                             <li className={`sidebar-item ${path === PATHS.LIST_DAILY_WORK_UPDATE ? "selected" : ""}`}>
                                 <Link to={PATHS.LIST_DAILY_WORK_UPDATE} className={`sidebar-link ${path === PATHS.LIST_DAILY_WORK_UPDATE ? "active" : ""}`} aria-expanded="false">
                                     <span>
-                                        <FiUsers style={{ fontSize: '1.2rem' }} />
+                                        <BsPersonWorkspace style={{ fontSize: '1.2rem' }} />
                                     </span>
                                     <span className="hide-menu">Daily Work Update</span>
                                 </Link>

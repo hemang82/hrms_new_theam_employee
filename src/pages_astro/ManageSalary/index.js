@@ -18,7 +18,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getDailyTaskListThunk, getSalaryListThunk, setLoader, updateDailyTaskList } from '../../Store/slices/MasterSlice';
 import Constatnt, { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, formatDate, formatDateDyjs, getAllStatusObject, getLoanStatusObject, openModel } from '../../config/commonFunction';
+import { closeModel, disableFutureDates, formatDate, formatDateDyjs, getAllStatusObject, getLoanStatusObject, openModel } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
@@ -254,6 +254,7 @@ export default function ManageSalary() {
                                                 date: date,
                                             });
                                         }}
+                                        disabledDate={disableFutureDates}
                                     />
                                 </div>
                             </div>

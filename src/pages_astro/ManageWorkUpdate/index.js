@@ -15,7 +15,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getDailyTaskListThunk, setLoader, updateDailyTaskList } from '../../Store/slices/MasterSlice';
 import Constatnt, { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, formatDate, formatDateDyjs, getAllStatusObject, getLoanStatusObject, momentDateFormat, momentNormalDateFormat, openModel, QuillContentRowWise, textInputValidation } from '../../config/commonFunction';
+import { closeModel, dayjsDateFormat, disableFutureDates, formatDate, formatDateDyjs, getAllStatusObject, getLoanStatusObject, momentDateFormat, momentNormalDateFormat, openModel, QuillContentRowWise, textInputValidation } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
@@ -57,12 +57,16 @@ export default function ManageWorkUpdate() {
     const [selectedWork, setSelectedWork] = useState({})
     const [isWorkEdit, setIsWorkEdit] = useState(false)
 
-
     const hasInitialLoaded = useRef(false);
 
     const fetchData = async () => {
+
         try {
-            await dispatch(getDailyTaskListThunk());
+            const request = {
+                start_date: startDate ? dayjsDateFormat(startDate, DateFormat?.DATE_DASH_TIME_FORMAT) : null,
+                end_date: endDate ? dayjsDateFormat(endDate, DateFormat?.DATE_DASH_TIME_FORMAT) : null,
+            };
+            await dispatch(getDailyTaskListThunk(request));
         } finally {
             // dispatch(setLoader(false));
         }
@@ -76,7 +80,7 @@ export default function ManageWorkUpdate() {
         if (dailyTaskList?.length === 0) {
             fetchData();
         }
-    }, [debounce]);
+    }, []);
 
     const handleDelete = async (is_true) => {
         if (!is_true) return;
@@ -152,11 +156,7 @@ export default function ManageWorkUpdate() {
         dispatch(setLoader(true));
         try {
             let submitData = {
-                date: momentNormalDateFormat(
-                    data?.date,
-                    DateFormat?.DATE_FORMAT,
-                    DateFormat?.DATE_DASH_TIME_FORMAT
-                ),
+                date: momentNormalDateFormat(data?.date, DateFormat?.DATE_FORMAT, DateFormat?.DATE_DASH_TIME_FORMAT),
                 description: data[AstroInputTypesEnum.DESCRIPTION],
                 title: data[AstroInputTypesEnum.TITLE],
             };
@@ -188,7 +188,8 @@ export default function ManageWorkUpdate() {
     const onChangeApiCalling = async (data) => {
         try {
             const request = {
-                emp_leave_company: data?.key,
+                start_date: data?.start_date ? dayjsDateFormat(data?.start_date, DateFormat?.DATE_DASH_TIME_FORMAT) : null,
+                end_date: data?.end_date ? dayjsDateFormat(data?.end_date, DateFormat?.DATE_DASH_TIME_FORMAT) : null,
             };
             await dispatch(getDailyTaskListThunk(request));
         } finally {
@@ -200,7 +201,7 @@ export default function ManageWorkUpdate() {
             <div className="container-fluid mw-100">
 
                 <SubNavbar title={"Daily Work Update List"} header={'Daily Work Update List'} />
-                
+
                 <div className="widget-content searchable-container list">
                     <div className="card card-body mb-2 p-3">
                         <div className="row g-2">
@@ -220,16 +221,11 @@ export default function ManageWorkUpdate() {
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0">
-
                             </div>
-
-                            {/* <div className="col-12 col-md-6 col-lg-1 d-flex flex-column">
-
-                            </div> */}
 
                             <div className="col-12 col-md-6 col-lg-2">
-
                             </div>
+
                             {/* Start Date */}
                             <div className="col-12 col-md-6 col-lg-2">
                                 <label className="d-block mb-1 fw-semibold">Start Date</label>
@@ -241,6 +237,7 @@ export default function ManageWorkUpdate() {
                                         setStartDate(date);
                                         setEndDate(null);
                                     }}
+                                    disabledDate={disableFutureDates}
                                 />
                             </div>
 

@@ -18,7 +18,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getHolidayListThunk, getSalaryListThunk, setLoader, updateDailyTaskList, updateHolidayList, updateIntrestList } from '../../Store/slices/MasterSlice';
 import Constatnt, { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, formatDate, formatDateDyjs, openModel, textInputValidation } from '../../config/commonFunction';
+import { closeModel, disableFutureDates, formatDate, formatDateDyjs, openModel, textInputValidation } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
@@ -201,10 +201,10 @@ export default function Holidays() {
         return (
             <Col xs={12} sm={12} md={6} lg={4} className="mb-4">
                 <Card
-                    className="shadow-sm h-100 rounded-3 border-0"
+                    className={`shadow-sm h-100 rounded-3 border-0 ${festival?.is_upcoming ? 'green_border' : 'red_border'}`}
                     style={{
-                        background: "#1f749417", // Soft festive background
-                        borderLeft: "5px solid #FF6B6B", // Accent color
+                        background: "#1f749417", 
+                        // border : '2px solid #FF6B6B ',
                     }}
                 >
                     <Card.Body className="d-flex flex-column justify-content-center align-items-start p-4">
@@ -270,6 +270,7 @@ export default function Holidays() {
                                                 date: date,
                                             });
                                         }}
+                                        disabledDate={disableFutureDates}
                                     />
                                 </div>
                             </div>
