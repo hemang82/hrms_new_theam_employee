@@ -258,14 +258,14 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.MY_PROFILE ? "selected" : ""}`}>
+                            {/* <li className={`sidebar-item ${path === PATHS.MY_PROFILE ? "selected" : ""}`}>
                                 <Link to={PATHS.MY_PROFILE} className={`sidebar-link ${path === PATHS.MY_PROFILE ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <FaRegUser style={{ fontSize: '1.2rem' }} />
                                     </span>
                                     <span className="hide-menu">Profile</span>
                                 </Link>
-                            </li>
+                            </li> */}
 
                             {/* <li className={`sidebar-item ${path === PATHS.BANK_DETAILS_LIST ? "selected" : ""}`}>
                                 <Link to={PATHS.BANK_DETAILS_LIST} className={`sidebar-link ${path === PATHS.BANK_DETAILS_LIST ? "active" : ""}`} aria-expanded="false">

@@ -203,7 +203,7 @@ export default function Holidays() {
                 <Card
                     className={`shadow-sm h-100 rounded-3 border-0 ${festival?.is_upcoming ? 'green_border' : 'red_border'}`}
                     style={{
-                        background: "#1f749417", 
+                        // background: "#1f749417", 
                         // border : '2px solid #FF6B6B ',
                     }}
                 >

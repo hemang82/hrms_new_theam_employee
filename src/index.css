@@ -552,7 +552,9 @@
   }
 
   .red_border {
-    background: #ff6b6b1c !important;
+    /* background: #ff6b6b1c !important; */
+    background: white !important;
+    border: 1px solid #ff6b6b !important;
   }
 
   .green_border {

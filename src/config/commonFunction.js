@@ -505,17 +505,19 @@ export const isValidInput = (inputType, text, event) => {
 
 export const textValidation = (inputType, value) => {
 
-    if (inputType === InputTypesEnum.NAME) {
+    if (inputType == InputTypesEnum.NAME) {
         return ({
             required: "Enter name",
             minLength: {
                 value: 2,
                 message: "Invalid name."
             },
-            pattern: {
-                value: InputRegex.FIRSTNAME_REGEX,
-                message: "Name should only contain letters"
-            }
+        })
+    }
+
+    if (inputType == InputTypesEnum.MOBILE) {
+        return ({
+            required: "Enter mobile number",
         })
     }
 
@@ -697,16 +699,16 @@ export const QuillContentRowWise = (content) => {
 
 // Disable future dates (only past & today allowed)
 export const disableFutureDates = (current) => {
-  return current && current > dayjs().endOf("day");
+    return current && current > dayjs().endOf("day");
 };
 
 // Disable past dates (only today & future allowed)
 export const disablePastDates = (current) => {
-  return current && current < dayjs().startOf("day");
+    return current && current < dayjs().startOf("day");
 };
 
 // Disable dates between two ranges
 export const disableBeforeStartDate = (startDate) => (current) => {
-  return current && current < dayjs(startDate).startOf("day");
+    return current && current < dayjs(startDate).startOf("day");
 };
 // --------------------------------- input validation ------------------------------------

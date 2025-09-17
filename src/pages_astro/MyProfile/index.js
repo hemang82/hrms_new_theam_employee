@@ -13,7 +13,7 @@ import Constatnt, { AwsFolder, Codes, PUBLIC_URL } from '../../config/constant';
 import CountryMobileNumber from '../../pages/CommonPages/CountryMobileNumber';
 import ChangePassword from './ChangePassword';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLoader } from '../../Store/slices/MasterSlice';
+import { getUserDetailsThunk, setLoader } from '../../Store/slices/MasterSlice';
 import { DateFormat, InputTypesEnum } from '../../config/commonVariable';
 import { isValidInput, textValidation, handelInputText, momentNormalDateFormat, dayjsDateFormat } from '../../config/commonFunction';
 import AppSettings from './AppSettings';
@@ -53,13 +53,12 @@ const MyProfile = () => {
         try {
 
             dispatch(setLoader(true))
-
             // let image = data?.profile_image;
             // if (image instanceof Blob) image = await uploadImageOnAWS(image, AwsFolder?.PROFILE_IMAGE);
 
             let request = {
                 name: data?.name,
-                birth_date: dayjsDateFormat(data?.date, DateFormat?.DATE_FORMAT),
+                birth_date: momentNormalDateFormat(data?.date, DateFormat?.DATE_FORMAT, DateFormat?.DATE_DASH_TIME_FORMAT),
                 phone_number: data?.mobile_number,
                 email: data?.email,
                 // profile_photo : ""
@@ -70,6 +69,7 @@ const MyProfile = () => {
                     navigation(PATHS?.MY_PROFILE)
                     setProfileModel(false)
                     TOAST_SUCCESS(response.message);
+                    dispatch(getUserDetailsThunk())
                     dispatch(setLoader(false))
                 } else {
                     dispatch(setLoader(false))
@@ -153,6 +153,7 @@ const MyProfile = () => {
 
                                             <div className="row">
                                                 {[
+                                                    // { label: "Image", value: userDetails?.employee_id },
                                                     { label: "Employee Id", value: userDetails?.employee_id },
                                                     { label: "Joining Date", value: formatDate(userDetails?.joining_date, DateFormat?.DATE_FORMAT) },
                                                     { label: "Name", value: userDetails?.name },
@@ -167,8 +168,6 @@ const MyProfile = () => {
                                                     { label: "Senior Name", value: userDetails?.senior_name },
                                                     { label: "Create Employee", value: formatDate(userDetails?.created_at, DateFormat?.DATE_FORMAT) },
                                                     { label: "Address", value: userDetails?.location },
-                                                    // { label: "Employee Leave Date", value: userDetails?.emp_leave_company == '1' ? userDetails?.emp_leave_date : null },
-                                                    // { label: "Employee Leave Reason", value: userDetails?.emp_leave_company == '1' ? userDetails?.emp_leave_reason : null },
                                                 ].map((item, index) => (
 
                                                     <div key={index} className="col-md-4 mb-4">
@@ -350,7 +349,7 @@ const MyProfile = () => {
                                                         className="form-control ps-2"
                                                         placeholder="Enter name"
                                                         // autoComplete='nope'
-                                                        {...register(InputTypesEnum.NAME, textValidation(InputTypesEnum.FIRSTNAME))}
+                                                        {...register(InputTypesEnum.NAME, textValidation(InputTypesEnum.NAME))}
                                                     />
                                                 </div>
                                                 <label className="errorc ps-1 pt-1">

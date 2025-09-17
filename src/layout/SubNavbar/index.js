@@ -1,8 +1,9 @@
 import React from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { PUBLIC_URL } from '../../config/constant';
+import Constatnt, { PUBLIC_URL } from '../../config/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateSlidebarToggle } from '../../Store/slices/MasterSlice';
+import { PATHS } from '../../Router/PATHS';
 
 export default function SubNavbar({ title, header, subHeader, subHeaderOnlyView }) {
 
@@ -79,11 +80,12 @@ export default function SubNavbar({ title, header, subHeader, subHeaderOnlyView 
 
                         <div
                             className="col-12 col-md-3 d-flex justify-content-md-end justify-content-center cursor-pointer"
-                            onClick={() => navigate("/profile")} // 🔗 Navigate to profile page
+                            onClick={() => navigate(PATHS?.MY_PROFILE)} // 🔗 Navigate to profile page
                             style={{ cursor: "pointer" }}
                         >
                             <img
-                                src={`${process.env.PUBLIC_URL}/dist/images/logos/hrms_icon.png`}
+                                // src={`${process.env.PUBLIC_URL}/dist/images/logos/hrms_icon.png`}
+                                src={userDetails?.profile_image || Constatnt?.DEFAULT_IMAGE}
                                 alt="User Avatar"
                                 className="rounded-circle me-3"
                                 style={{ width: "40px", height: "40px", objectFit: "cover" }}
