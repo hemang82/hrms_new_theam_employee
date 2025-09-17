@@ -161,7 +161,7 @@ const MyProfile = () => {
                                                     { label: "Email Address", value: userDetails?.email },
                                                     { label: "Mobile Number", value: `+91 ${userDetails?.phone_number}` },
                                                     { label: "Date Of Birth", value: formatDate(userDetails?.birth_date, DateFormat?.DATE_FORMAT) },
-                                                    { label: "Password", value: userDetails?.password },
+                                                    // { label: "Password", value: userDetails?.password },
                                                     { label: "Designation", value: userDetails?.designation },
                                                     { label: "Department", value: userDetails?.dept_name },
                                                     { label: "Monthly Salary", value: userDetails?.salary_monthly },
@@ -183,7 +183,7 @@ const MyProfile = () => {
                                                                 />
                                                             ) : <>
                                                                 <p className="mb-1 fs-4">{item.label}</p>
-                                                                <h6 className="fw-semibold mb-0 fs-5 text-capitalize">{item.value || 'N/A'}</h6>
+                                                                <h6 className="fw-semibold mb-0 fs-5 ">{item.value || 'N/A'}</h6>
                                                             </>
                                                         }
                                                     </div>

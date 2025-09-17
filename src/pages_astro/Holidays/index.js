@@ -262,7 +262,7 @@ export default function Holidays() {
                                     <DatePicker
                                         className="custom-datepicker w-100 p-2"
                                         picker="year"
-                                        format={dateFormat}
+                                        format={DateFormat?.DATE_WEEK_NAME_FORMAT_YEAR}
                                         value={startDate}
                                         onChange={(date) => {
                                             setStartDate(date);

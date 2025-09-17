@@ -62,11 +62,7 @@ export default function ManageBirthday() {
 
     const fetchData = async () => {
         const request = {
-            // limit: perPage,
-            // offset: page,
-            // search: globalFilterValue || "",
-            // order_by: sortField,
-            // order_direction: sortOrder === 1 ? 'asc' : 'desc',
+            birthday: true
         };
         await dispatch(getAdminEmployeeListThunk(request));
     };
@@ -201,6 +197,8 @@ export default function ManageBirthday() {
     }
 
     const BirthDayCard = ({ birthday }) => {
+
+
         const isBirthdayToday =
             dayjs().format("MM-DD") === dayjs(birthday?.birth_date).format("MM-DD");
 
@@ -208,10 +206,10 @@ export default function ManageBirthday() {
             <Col xs={12} sm={6} md={4} lg={3} className="mb-4">
                 <motion.div whileHover={{ scale: 1.02 }}>
                     <Card
-                        className="shadow-sm h-100 rounded-3 border-1 border-light position-relative overflow-hidden"
-                        style={{
-                            background: "#ffffff",
-                        }}
+                        className={`shadow-sm h-100 rounded-3 border-1 border-light position-relative overflow-hidden ${birthday?.is_upcoming ? 'green_border' : 'red_border'}`}
+                    // style={{
+                    //     background: "#ffffff",
+                    // }}
                     >
                         {isBirthdayToday && (
                             <Badge
@@ -229,7 +227,8 @@ export default function ManageBirthday() {
                         <Card.Body className="d-flex flex-column justify-content-center align-items-center text-center p-3">
                             {/* Profile Image */}
                             <Image
-                                src={birthday?.profileImage || `${process.env.PUBLIC_URL}/dist/images/logos/hrms_icon.png`}
+                                // src={birthday?.profileImage || `${process.env.PUBLIC_URL}/dist/images/logos/hrms_icon.png`}
+                                src={birthday?.profileImage || `${Constatnt?.DEFAULT_IMAGE}`}
                                 roundedCircle
                                 fluid
                                 style={{
@@ -251,7 +250,6 @@ export default function ManageBirthday() {
                                 {birthday?.name || "Employee Name"}
                             </h5>
 
-                            {/* Employee ID */}
                             <small
                                 className="text-muted fw-semibold mb-3 truncate-text"
                                 style={{ maxWidth: "90%" }}
@@ -259,16 +257,16 @@ export default function ManageBirthday() {
                                 Employee ID: {birthday?.employee_id}
                             </small>
 
-                            {/* Birthday Date */}
                             <div
                                 className="d-flex align-items-center justify-content-center fs-6 fw-semibold"
                                 style={{
                                     color: "#1f7494",
-                                    background: "#f8f9fa",
+                                    background: birthday?.is_upcoming ? "#ebf1f6" : "#f8f9fa",
                                     borderRadius: "12px",
                                     padding: "5px 10px",
                                     minWidth: "max-content", // so the box fits content
                                     whiteSpace: "nowrap",
+                                    border: '2px solid greay'
                                 }}
                             >
                                 <CiCalendarDate

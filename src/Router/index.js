@@ -27,12 +27,10 @@ const MangeAstrologer = Loadable(lazy(() => import("../pages_astro/ManageLone/in
 const AddAstrologer = Loadable(lazy(() => import("../pages_astro/ManageLone/AddAstrologer.js")));
 const ViewAstrologerDetials = Loadable(lazy(() => import("../pages_astro/ManageLone/ViewAstrologer.js")));
 
-
-// const RequestAstrologer = Loadable(lazy(() => import("../pages_astro/ManageLone/RequestAstrologer.js")));
-
 const MangeCustomer = Loadable(lazy(() => import("../pages_astro/ManageWorkUpdate/index.js")));
-const AddCustomer = Loadable(lazy(() => import("../pages_astro/ManageWorkUpdate/AddCustomer.js")));
-const ViewCustomerDetials = Loadable(lazy(() => import("../pages_astro/ManageWorkUpdate/ViewCustomer.js")));
+
+// const AddCustomer = Loadable(lazy(() => import("../pages_astro/ManageWorkUpdate/AddCustomer.js")));
+// const ViewCustomerDetials = Loadable(lazy(() => import("../pages_astro/ManageWorkUpdate/ViewCustomer.js")));
 
 const ManageInterest = Loadable(lazy(() => import("../pages_astro/ManageSalary/index.js")));
 
@@ -43,8 +41,6 @@ const ViewProcessingFee = Loadable(lazy(() => import("../pages_astro/ManageProce
 const ContactUs = Loadable(lazy(() => import("../pages_astro/ContectUs")));
 const ManageFaq = Loadable(lazy(() => import("../pages_astro/ManageFaq")));
 const ContectUsDetails = Loadable(lazy(() => import("../pages_astro/ContectUs/ContectDetials.js")));
-
-
 
 const ManageEMIPaymentCharges = Loadable(lazy(() => import("../pages_astro/ManageEMIPaymentCharges")));
 
@@ -129,10 +125,9 @@ const Router = () => {
                         <Route path="/loan_disbursement_list/loan_disbursement_details" element={<ViewAstrologerDetials />} />
 
                         <Route path={PATHS?.LIST_DAILY_WORK_UPDATE} element={<MangeCustomer />} />
-                        <Route path="/user_list/add_user" element={<AddCustomer />} />
-                        <Route path="/user_list/edit_user" element={<AddCustomer />} />
-                        <Route path="/user_list/user_details" element={<ViewCustomerDetials />} />
-
+                        {/* <Route path="/user_list/add_user" element={<AddCustomer />} />
+                        <Route path="/user_list/edit_user" element={<AddCustomer />} /> */}
+                        {/* <Route path="/user_list/user_details" element={<ViewCustomerDetials />} /> */}
                         <Route path="/interest_list" element={<ManageInterest />} />
 
                         <Route path={PATHS.HOLIDAYS_LIST} element={<HOLIDAYS />} />

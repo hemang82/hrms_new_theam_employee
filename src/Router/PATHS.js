@@ -12,6 +12,7 @@ export const PATHS = {
     SALARY_LIST: '/salary_list',
 
     LEAVE_BALANCE_LIST: '/leave_balance_list',
+
     BANK_DETAILS_LIST: '/bank_details_list',
 
     DEPARTNMENT_LIST: '/departnment_list',
@@ -22,8 +23,5 @@ export const PATHS = {
 
     LIST_BIRTHDAY: '/list_birthday',
 
-    MY_PROFILE: '/my_profile',
-
-
-
+    MY_PROFILE: '/my_profile'
 }
