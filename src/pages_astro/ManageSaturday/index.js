@@ -190,16 +190,16 @@ export default function ManageSaturday() {
                             </h5>
 
                             <Row className="fw-semibold custom_border_bottom pb-2 mb-2 text-muted small">
-                                <Col xs={4}>Date</Col>
-                                <Col xs={2}>Day's</Col>
+                                <Col xs={5}>Date</Col>
+                                <Col xs={3}>Day's</Col>
                                 <Col xs={4}>Day Type</Col>
                                 {/* <Col xs={2}>Status</Col> */}
                             </Row>
 
                             {saturdays.slice(0, 5).map((rowData) => (
                                 <Row key={rowData.id} className="align-items-center custom_border_bottom py-2">
-                                    <Col xs={4}>{dayjs(rowData.date).format("DD-MM-YYYY")}</Col>
-                                    <Col xs={2}>{getSaturdayOrdinal(rowData.date) || "-"}</Col>
+                                    <Col xs={5}>{dayjs(rowData.date).format("DD-MM-YYYY")}</Col>
+                                    <Col xs={3}>{getSaturdayOrdinal(rowData.date) || "-"}</Col>
                                     <Col xs={4}>
                                         <span
                                             className={`badge me-2 text-light rounded-4 status_font_samll ${getAttendanceStatusColor(rowData?.type) || "bg-secondary"}`}

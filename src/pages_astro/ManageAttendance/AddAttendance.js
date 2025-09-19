@@ -184,7 +184,7 @@ export default function AddCustomer() {
                                     {console.log('getWorkingHours', getBreakMinutes(watch('breaks')))}
                                     <div className="row">
                                         {[
-                                           
+
                                             { label: "Work Hours", value: getWorkingHours(dayjs(watch('checkIn')).format("HH:mm:ss"), dayjs(watch('checkOut')).format("HH:mm:ss"), getBreakMinutes(watch('breaks'))) || 0 },
                                             { label: "Total Break", value: getBreakMinutes(watch('breaks')) + 'm' },
 
