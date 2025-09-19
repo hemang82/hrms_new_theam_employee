@@ -115,6 +115,7 @@ export const getSalaryListThunk = createAsyncThunk("SalaryList", async (submitDa
         dispatch(setLoader(true));
         submitData.action = "employee"
         const { data } = await API.listSalary(submitData);
+        dispatch(setLoader(false));
         return data?.results[0];
     } catch (error) {
         // Forward error to extraReducers for proper error handling

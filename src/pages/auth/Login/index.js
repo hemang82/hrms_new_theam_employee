@@ -15,29 +15,33 @@ import Constatnt, { Codes, PUBLIC_URL } from '../../../config/constant'
 import { InputTypesEnum } from '../../../config/commonVariable'
 import { textValidation } from '../../../config/commonFunction'
 import { Language, TOAST_ERROR } from '../../../config/common';
+import { setLoader } from '../../../Store/slices/MasterSlice';
+import { useDispatch } from 'react-redux';
 
 const Login = () => {
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const { register, handleSubmit, formState: { errors }, reset, getValues, watch, setValue } = useForm();
 
     let [showPassword, setShowPassword] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
 
     const onSubmit = (submitData) => {
+        dispatch(setLoader(true));
         let requestBody = {
             role: Constatnt?.ROLE,
             employee_id: submitData[InputTypesEnum.EMPLOYEE],
             password: submitData[InputTypesEnum.PASSWORD]
         }
         API.login(requestBody).then((response) => {
-            console.log('response :', response);
             if (response?.code == Codes.SUCCESS) {
-                console.log('response login', response?.data);
                 loginRedirection(response?.data);
                 navigate('/dashboard')
                 reset();
             } else {
+                dispatch(setLoader(false));
                 TOAST_ERROR(response?.message)
             }
         })
@@ -66,7 +70,7 @@ const Login = () => {
                                     <div className="card-body">
                                         <a className="text-nowrap logo-img text-center d-block mb-3 w-100">
                                             <img src={Constatnt?.APP_LOGO} width={250} height={75} alt />
-                                            
+
                                         </a>
 
                                         <form method='post' onSubmit={handleSubmit(onSubmit)}>
@@ -102,7 +106,7 @@ const Login = () => {
                                                 {/* <a className="text-primary fw-medium" href="./authentication-forgot-password.html">Forgot Password ?</a> */}
                                             </div>
 
-                                            <button type='submit' className="btn btn-primary w-100 py-8 mb-2 rounded-2">Sign In</button>
+                                            <button type='submit' className="btn btn-primary w-100 py-8 mb-2 rounded-2">Login</button>
 
                                         </form>
                                     </div>

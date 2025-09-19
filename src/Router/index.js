@@ -90,10 +90,11 @@ const Router = () => {
         }
     }, [islogin, token]);
 
+    
     if (!islogin) {
         return (
             <>
-                {/* <Spinner isActive={isLoading} message={'Please Wait...'} /> */}
+            <Spinner isActive={isLoading} message={'Please Wait...'} />
                 <Routes>
                     <Route path="/" element={<Login />} />
                     <Route path="/login" element={<Login />} />
@@ -106,7 +107,6 @@ const Router = () => {
         return (
             <>
                 {isLoading && <Spinner isActive={isLoading} message={'Please Wait...'} />}
-
                 <Routes>
                     <Route element={<DashboardLayout />}>
                         <Route path="/" element={<Dashboard />} />

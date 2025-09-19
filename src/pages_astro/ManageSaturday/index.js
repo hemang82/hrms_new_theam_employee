@@ -243,7 +243,6 @@ export default function ManageSaturday() {
         );
     };
 
-
     return (
         <>
             <div className="container-fluid mw-100">
@@ -251,7 +250,8 @@ export default function ManageSaturday() {
                 <div className="widget-content searchable-container list">
 
                     <div className="card card-body mb-2 p-3 mb-2">
-                        <div className="row g-3 ">
+                        <div className="row g-3">
+
                             <div className="col-12 col-md-6 col-lg-8">
                                 {/* <div className="position-relative w-50">
                                     <input

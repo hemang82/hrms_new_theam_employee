@@ -5,9 +5,6 @@ import AxiosClientApi from "./axios.services";
     Auth Routers                                                                              
 ====================================================== */
 
-const CATEGORY = "category";
-
-const BANNER = "banner";
 
 // ----------------------- LONE ---------------------------------- 
 const ADMIN = "admin";
@@ -33,7 +30,6 @@ const ADMIN_HOLIDAYS = "admin_holidays";
 const EMPLOYEE_LEAVE = "employee_leave";
 const ADMIN_EMP_ATTENDANCE = "employee_attendence";
 const COMMON = "common";
-
 
 // ----------------------- HRMS --------------------------------------------
 
