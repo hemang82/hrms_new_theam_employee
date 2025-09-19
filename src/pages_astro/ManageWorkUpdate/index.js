@@ -51,7 +51,6 @@ export default function ManageWorkUpdate() {
     const [page, setPage] = useState(1);
     const [startDate, setStartDate] = useState(dayjs().startOf("month")); // ✅ 1st day of month
     const [endDate, setEndDate] = useState(dayjs());
-    const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
     const [addWorkUpdateModal, setAddWorkUpdate] = useState(false);
     const [viewModel, setViewModel] = useState(false);
     const [selectedWork, setSelectedWork] = useState({})
@@ -171,7 +170,11 @@ export default function ManageWorkUpdate() {
 
             if (response.code == Codes.SUCCESS) {
                 TOAST_SUCCESS(response?.message);
-                dispatch(getDailyTaskListThunk());
+                const request = {
+                    start_date: startDate ? dayjsDateFormat(startDate, DateFormat?.DATE_DASH_TIME_FORMAT) : null,
+                    end_date: endDate ? dayjsDateFormat(endDate, DateFormat?.DATE_DASH_TIME_FORMAT) : null,
+                };
+                dispatch(getDailyTaskListThunk(request));
                 closeWorkUpdateModelFunc();
             } else {
                 TOAST_ERROR(response?.message);
