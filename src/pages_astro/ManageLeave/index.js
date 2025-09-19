@@ -574,7 +574,7 @@ export default function ManageCoustomer() {
                                             // }
                                         }}
                                             state={rowData}
-                                            className={`text-info edit cursor_pointer`}
+                                            className={`text-custom-theam edit cursor_pointer`}
                                         >
                                             <i className="ti ti-eye fs-7" />
                                         </Link>
@@ -612,7 +612,7 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">{'Add Leave Balance'} </h6>
+                            <h6 className="modal-title fs-5">{'Add Leave Balance'} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeLeaveModelFunc() }} />
                         </div>
 
@@ -714,7 +714,7 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-4">{selectedLeave?.actionType === "approved" ? 'Are you sure approve leave ?' : "Cancel Leave"} </h6>
+                            <h6 className="modal-title fs-4">{selectedLeave?.actionType === "approved" ? 'Are you sure approve leave ?' : "Cancel Leave"} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeActionModelFunc() }} />
                         </div>
                         <div className="modal-body">
@@ -786,7 +786,7 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5"> Leave Details </h6>
+                            <h6 className="modal-title fs-5"> Leave Details </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeViewModelFunc() }} />
                         </div>
                         <div className="modal-body ">
@@ -797,11 +797,10 @@ export default function ManageCoustomer() {
                                     { label: "Days", value: selectedLeave?.days },
                                     { label: "Start Date", value: formatDate(selectedLeave?.start_date, DateFormat?.DATE_FORMAT) },
                                     { label: "End Date", value: formatDate(selectedLeave?.end_date, DateFormat?.DATE_FORMAT) },
-                                    // { label: "Admin Reason", value: selectedLeave?.admin_reason },
-                                    // { label: "Reason", value: selectedLeave?.reason },
+                                    { label: "", value: "" },
                                 ].map((item, index) => (
 
-                                    <div key={index} className="col-md-4 mb-4">
+                                    <div key={index} className="col-md-4 mb-4 border-bottom border-1 pb-2">
 
                                         {item?.label == "Reason" ? (<>
                                             <p className="mb-1 fs-4">{item.label}</p>
@@ -812,7 +811,6 @@ export default function ManageCoustomer() {
                                                 <p className="mb-1 fs-4">{item.label}</p>
                                                 <h6 className="fw-semibold mb-0 fs-5 text-capitalize">{item.value || 'N/A'}</h6>
                                             </>
-
                                         }
                                     </div>
                                 ))}
@@ -845,8 +843,6 @@ export default function ManageCoustomer() {
                     <div className="modal-backdrop fade show"></div>
                 )
             }
-
-
             {
                 customModel.isOpen && customModel?.modalType === ModelName.DELETE_MODEL && (
                     <Model>

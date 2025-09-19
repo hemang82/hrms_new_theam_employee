@@ -634,7 +634,7 @@ export default function ManageCoustomer() {
                                 <Column field="status" header="Action" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <div className="action-btn">
                                         <a
-                                            className={`text-info edit cursor_pointer me-1 ${DISABLED_STATUSES.includes(rowData?.status) ? "disabled-btn" : ""}`}
+                                            className={`text-custom-theam edit cursor_pointer me-1 ${DISABLED_STATUSES.includes(rowData?.status) ? "disabled-btn" : ""}`}
                                             onClick={() => {
                                                 if (!DISABLED_STATUSES.includes(rowData?.status)) {
                                                     navigat(`/loan_list/edit_loan`, { state: rowData });
@@ -646,7 +646,7 @@ export default function ManageCoustomer() {
                                         <Link
                                             to={'/loan_list/loan_details'}
                                             state={rowData}
-                                            className="text-info edit cursor_pointer"
+                                            className="text-custom-theam edit cursor_pointer"
                                         >
                                             <i className="ti ti-eye fs-7" />
                                         </Link>
@@ -731,7 +731,7 @@ export default function ManageCoustomer() {
                     <div className="modal-content border-0">
 
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">Manage Loan Status</h6>
+                            <h6 className="modal-title fs-5">Manage Loan Status</h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { setStatusModal(false); setIsCustom(false); setIsProcessingCustom(false); setSelecteLoan(null); reset() }} />
                         </div>
 

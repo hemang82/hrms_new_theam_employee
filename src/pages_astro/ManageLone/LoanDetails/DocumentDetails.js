@@ -326,7 +326,7 @@ export const DocumentDetails = ({ loanDetailsData, setApiReload }) => {
 
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary " style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">{isEdit ? "Edit" : "Add"} Completion Document</h6>
+                            <h6 className="modal-title fs-5">{isEdit ? "Edit" : "Add"} Completion Document</h6>
                             <button type="button" className="btn-close btn-close-dark" data-bs-dismiss="modal" aria-label="Close" onClick={() => { setLoanCompletionModel(false); setLoanCompletionFileName(null); setIsEdit(false); setEditData(null); reset() }} />
                         </div>
 

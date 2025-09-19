@@ -46,14 +46,6 @@ const Index = () => {
     }, []);
 
     const dashboardCards = [
-        // {
-        //     title: "Date",
-        //     icon: "/dist/images/svgs/Date.svg",
-        //     value: <>
-        //         {momentDateFormat(dashboard?.date, DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT_WEEK) || '-'}
-        //     </>,
-        //     link: 'PATHS?.EMPLOYEE_LIST'
-        // },
         {
             title: "Check In Time",
             icon: "/dist/images/svgs/Check_in.svg",
@@ -74,15 +66,13 @@ const Index = () => {
             link: 'PATHS?.ATTENDANCE_LIST'
         },
         {
-            title: "Estimated Completed Hours",
+            title: "Estimated Completed Time",
             icon: "/dist/images/svgs/hourglass.svg",
             // value: getWorkingHours(dashboard?.first_check_in_time ? dayjs(dashboard?.first_check_in_time,"HH:mm:ss").format("HH:mm:ss") : 0, dayjs(dashboard?.last_check_out_time || dayjs() , "HH:mm:ss").format("HH:mm:ss"), getBreakMinutes(0)) || 0,
             value: `${dashboard?.estimatedCompletionTime ? momentTimeFormate(dashboard?.estimatedCompletionTime, TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-"}`,
             link: 'PATHS?.ATTENDANCE_LIST'
         },
     ];
-
-    console.log('dashboard', dashboard);
 
     return (
         <>

@@ -350,7 +350,7 @@ export default function EMIPaymentCharges() {
 
                                 <Column field="statuss" header="Action" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <div className="action-btn">
-                                        <a className={`text-info edit cursor_pointer cursor_pointer  ms-2 ${rowData.is_deleted && 'disabled-btn'}`} onClick={() => { !rowData.is_deleted && editFunction(rowData) }} >
+                                        <a className={`text-custom-theam edit cursor_pointer cursor_pointer  ms-2 ${rowData.is_deleted && 'disabled-btn'}`} onClick={() => { !rowData.is_deleted && editFunction(rowData) }} >
                                             <i class="ti ti-edit fs-7"></i>
                                         </a>
                                         <a className={`text-dark delete ms-2 cursor_pointer  ${rowData.is_deleted && 'disabled-btn'}`} onClick={() => { !rowData.is_deleted && openModel(dispatch, ModelName.DELETE_MODEL); setSelectedUser(rowData) }}>
@@ -375,7 +375,7 @@ export default function EMIPaymentCharges() {
                 <div className="modal-dialog modal-dialog-centered modal-sm modal-md modal-lg" role="document">
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary " style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">{is_edit ? 'Edit' : 'Add'} Payment Charges </h6>
+                            <h6 className="modal-title fs-5">{is_edit ? 'Edit' : 'Add'} Payment Charges </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeModelFunc() }} />
                         </div>
                         <div className="modal-body">

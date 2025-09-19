@@ -258,59 +258,6 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            {/* <li className={`sidebar-item ${path === PATHS.MY_PROFILE ? "selected" : ""}`}>
-                                <Link to={PATHS.MY_PROFILE} className={`sidebar-link ${path === PATHS.MY_PROFILE ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <FaRegUser style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Profile</span>
-                                </Link>
-                            </li> */}
-
-                            {/* <li className={`sidebar-item ${path === PATHS.BANK_DETAILS_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS.BANK_DETAILS_LIST} className={`sidebar-link ${path === PATHS.BANK_DETAILS_LIST ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <TbBuildingBank style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Bank Details</span>
-                                </Link>
-                            </li> */}
-
-                            {/* <li className={`sidebar-item ${path === PATHS.DEPARTNMENT_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS.DEPARTNMENT_LIST} className={`sidebar-link ${path === PATHS.DEPARTNMENT_LIST ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <CgList style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Department</span>
-                                </Link>
-                            </li> */}
-
-                            {/* <li className={`sidebar-item ${path === PATHS.LEAVE_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS.LEAVE_LIST} className={`sidebar-link ${path === PATHS.LEAVE_LIST ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <FcLeave style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Leave</span>
-                                </Link>
-                            </li> */}
-
-                            {/* <li className={`sidebar-item ${path === PATHS.LEAVE_BALANCE_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS.LEAVE_BALANCE_LIST} className={`sidebar-link ${path === PATHS.LEAVE_BALANCE_LIST ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <FcLeave style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Leave Balance</span>
-                                </Link>
-                            </li> */}
-
-                            {/* <li className={`sidebar-item ${path === "/contact_us_list" ? "selected" : ""}`}>
-                                <Link to={'/contact_us_list'} className={`sidebar-link ${path === "/contact_us_list" ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <MdOutlineContactPhone style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Contact Us</span>
-                                </Link>
-                            </li> */}
 
                             <li className={`sidebar-item  `} onClick={() => { openModel(dispatch, ModelName.LOGOUT_MODEL) }} style={{ cursor: 'pointer' }}>
                                 <Link className={`sidebar-link`} aria-expanded="false" >

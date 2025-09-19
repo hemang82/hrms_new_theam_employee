@@ -174,10 +174,10 @@ export default function ManageInterest() {
 
                                 <Column field="statuss" header="Action" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <div className="action-btn">
-                                        <a className="text-info edit cursor_pointer cursor_pointer" onClick={() => navigat(`/processing_fee_list/edit_processing_fee`, { state: rowData })} >
+                                        <a className="text-custom-theam edit cursor_pointer cursor_pointer" onClick={() => navigat(`/processing_fee_list/edit_processing_fee`, { state: rowData })} >
                                             <i class="ti ti-edit fs-7"></i>
                                         </a>
-                                        <Link to={'/processing_fee_list/processing_fee_details'} state={rowData} className="text-info edit cursor_pointer">
+                                        <Link to={'/processing_fee_list/processing_fee_details'} state={rowData} className="text-custom-theam edit cursor_pointer">
                                             <i className="ti ti-eye fs-7 ms-2" />
                                         </Link>
                                         <a className="text-dark delete ms-2 cursor_pointer cursor_pointer" onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedUser(rowData) }}>

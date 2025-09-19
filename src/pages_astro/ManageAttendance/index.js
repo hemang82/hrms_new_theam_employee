@@ -168,7 +168,7 @@ export default function ManageAttendance() {
         } else {
             setUpdateAttendanceList([])
         }
-    }, [attendanceList, startDate, endDate, employeeStatus]);
+    }, [attendanceList, employeeStatus]);
 
     useEffect(() => {
         let request = {
@@ -620,11 +620,11 @@ export default function ManageAttendance() {
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
 
-                                        {/* <a className="text-info edit cursor_pointer cursor_pointer me-1" onClick={() => navigat(PATHS?.EDIT_ATTENDANCE, { state: rowData })} >
+                                        {/* <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => navigat(PATHS?.EDIT_ATTENDANCE, { state: rowData })} >
                                             <i class="ti ti-edit fs-7"></i>
                                         </a> */}
 
-                                        {/* <a className="text-info edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
+                                        {/* <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
                                             <i class="ti ti-edit fs-7"></i>
                                         </a> */}
 
@@ -634,7 +634,7 @@ export default function ManageAttendance() {
                                             }
                                         }}
                                             state={rowData}
-                                            className={`text-info edit ${rowData?.breaks?.length > 0 ? "cursor_pointer " : "disabled-status"}`}
+                                            className={`text-info edit ${rowData?.breaks?.length > 0 ? "cursor_pointer text-custom-theam" : "disabled-status"}`}
                                         >
                                             <i className="ti ti-eye fs-7" />
                                         </Link>
@@ -658,7 +658,7 @@ export default function ManageAttendance() {
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">{'Attendance Details'} </h6>
+                            <h6 className="modal-title fs-5">{'Attendance Details'} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeModelFunc() }} />
                         </div>
 
@@ -670,12 +670,10 @@ export default function ManageAttendance() {
                                         <div className="col-12 justify-content-center">
                                             <div className="mb-3">
                                                 <div className="row">
-
-                                                    {console.log('selectedAttendanceselectedAttendance', selectedAttendance)}
                                                     {[
                                                         // { label: "Employee Id", value: selectedEmployee?.employee_id },
-                                                        // { label: "Name", value: selectedEmployee?.name },
-                                                        // { label: "Gender", value: selectedEmployee?.gender == "M" ? "Male" : selectedEmployee?.gender == "F" ? "Female" : "Other" },
+                                                        { label: "Date", value: momentDateFormat(selectedAttendance?.date, DateFormat?.DATE_FORMAT) || '-' },
+                                                        { label: "Total Work Hours", value: getWorkingHours(selectedAttendance?.checkInTimes?.length > 0 ? selectedAttendance?.checkInTimes[0] : 0, selectedAttendance?.checkOutTimes?.length > 0 ? selectedAttendance?.checkOutTimes[0] : 0, getBreakMinutes(selectedAttendance?.breaks || '-')) || '-' },
                                                         {
                                                             label: "Check In",
                                                             value: selectedAttendance?.checkInTimes?.[0]
@@ -688,51 +686,73 @@ export default function ManageAttendance() {
                                                                 ? dayjs(`${selectedAttendance?.date} ${momentTimeFormate(selectedAttendance?.checkOutTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss').format(TimeFormat?.TIME_12_HOUR_FORMAT)
                                                                 : '-'
                                                         },
+                                                        { label: "Break Timeline", value: "-" },
                                                         { label: "Total Break", value: selectedAttendance?.breaks?.length > 0 ? getBreakMinutes(selectedAttendance?.breaks) + 'm' : "-" },
-                                                        { label: "Total Work Hours", value: getWorkingHours(selectedAttendance?.checkInTimes?.length > 0 ? selectedAttendance?.checkInTimes[0] : 0, selectedAttendance?.checkOutTimes?.length > 0 ? selectedAttendance?.checkOutTimes[0] : 0, getBreakMinutes(selectedAttendance?.breaks || '-')) || '-' },
-                                                    ].map((item, index) => (
-                                                        <div className='col-12 col-sm-6'>
-                                                            <div key={index} className="card border-1  them-light shadow-sm mt-2 ">
+                                                    ].map((item, index) => (<>
+                                                        <div className='col-12 col-sm-6 attendance_card'>
+                                                            <div key={index} className="card border-1 them-light shadow-sm mt-2 ">
                                                                 <div className="card-body text-center m-1 p-1">
-                                                                    <p className="fw-semibold fs-6 text-dark ">{item.label}</p>
-                                                                    <h5 className="fw-semibold text-dark mb-0 fs-5">
-                                                                        {item?.value || '0'}
-                                                                    </h5>
+                                                                    <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
+                                                                    {
+                                                                        item.label == "Break Timeline" ? (<>
+                                                                            <div className="timeline position-relative ms-4">
+
+                                                                                <div className=" border-custom-theam border-2 position-absolute top-0 bottom-0 start-0" style={{ marginLeft: "7px" }} ></div>
+                                                                                {selectedAttendance?.breaks?.length > 0 && selectedAttendance?.breaks?.map((b, index) => (
+                                                                                    <div key={index}>
+                                                                                        <div className="mt-2 d-flex align-items-start">
+                                                                                            <i className="bi bi-circle-fill text-success fs-5 me-3"></i>
+                                                                                            <div>
+                                                                                                <span className="badge bg-light text-dark fs-4 fw-medium">
+                                                                                                    {momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - {momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)}
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ))}
+
+                                                                            </div>
+                                                                        </>) : (<>
+                                                                            <h5 className="fw-medium text-dark mb-0 fs-5">
+                                                                                {item?.value || '0'}
+                                                                            </h5>
+                                                                        </>)
+                                                                    }
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    ))}
+                                                    </>))}
+
+                                                    {/* <div className='col-12 col-sm-6 attendance_card'>
+                                                        <div className="card border-1 them-light shadow-sm mt-2 ">
+                                                            <div className="card-body text-center m-1 p-1">
+
+                                                                <p className="fw-semibold fs-4 text-custom-theam ">Break Timeline</p>
+
+                                                                <div className="timeline position-relative ms-4">
+
+                                                                    <div className=" border-custom-theam border-2 position-absolute top-0 bottom-0 start-0" style={{ marginLeft: "7px" }} ></div>
+                                                                    {selectedAttendance?.breaks?.length > 0 && selectedAttendance?.breaks?.map((b, index) => (
+                                                                        <div key={index}>
+                                                                            <div className="mt-2 d-flex align-items-start">
+                                                                                <i className="bi bi-circle-fill text-success fs-5 me-3"></i>
+                                                                                <div>
+                                                                                    <span className="badge bg-light text-dark fs-4 fw-medium">
+                                                                                        {momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - {momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div> */}
                                                 </div>
                                             </div>
                                         </div>
                                     }
-                                </div>
-
-                                <div className="text-center mb-4">
-                                    <h3 className="fw-bold text-blue fs-6">Break Timeline</h3>
-                                    <hr />
-                                </div>
-
-
-                                <div className="timeline position-relative ms-4">
-                                    {/* Vertical Line */}
-                                    <div
-                                        className="border-start border-2 border-secondary position-absolute top-0 bottom-0 start-0"
-                                        style={{ marginLeft: "7px" }}
-                                    ></div>
-
-                                    {selectedAttendance?.breaks?.length > 0 && selectedAttendance?.breaks?.map((b, index) => (
-                                        <div key={index}>
-                                            <div className="mb-4 d-flex align-items-start">
-                                                <i className="bi bi-circle-fill text-success fs-5 me-3"></i>
-                                                <div>
-                                                    <span className="badge bg-light text-dark">
-                                                        {momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - {momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -751,7 +771,7 @@ export default function ManageAttendance() {
                     <div className="modal-content border-0">
 
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h3 className="modal-title text-dark fs-5">{attendanceEditModal ? 'Edit Attendance Details' : 'Add Attendance Details'} </h3>
+                            <h3 className="modal-title fs-5">{attendanceEditModal ? 'Edit Attendance Details' : 'Add Attendance Details'} </h3>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeAttendanceModel() }} />
                         </div>
 

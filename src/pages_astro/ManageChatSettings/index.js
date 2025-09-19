@@ -278,7 +278,7 @@ export default function ManageChatSettings() {
 
                                 <Column field="status" header="Action" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <div className="action-btn">
-                                        <a className="text-info edit cursor_pointer cursor_pointer" onClick={() => navigat(`/chat_setting_list/edit_chat_setting`, { state: rowData })} >
+                                        <a className="text-custom-theam edit cursor_pointer cursor_pointer" onClick={() => navigat(`/chat_setting_list/edit_chat_setting`, { state: rowData })} >
                                             <i class="ti ti-edit fs-7"></i>
 
                                         </a>
