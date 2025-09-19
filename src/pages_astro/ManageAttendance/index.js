@@ -697,7 +697,7 @@ export default function ManageAttendance() {
                                                                         item.label == "Break Timeline" ? (<>
                                                                             <div className="timeline position-relative ms-4">
 
-                                                                                <div className=" border-custom-theam border-2 position-absolute top-0 bottom-0 start-0" style={{ marginLeft: "7px" }} ></div>
+                                                                                <div className="border-custom-theam border-2 position-absolute top-0 bottom-0 start-0" style={{ marginLeft: "7px" }} ></div>
                                                                                 {selectedAttendance?.breaks?.length > 0 && selectedAttendance?.breaks?.map((b, index) => (
                                                                                     <div key={index}>
                                                                                         <div className="mt-2 d-flex align-items-start">

@@ -341,10 +341,10 @@ export default function ManageCoustomer() {
                                                     (Number(selectedEmployee?.compoff) || 0)
                                             }
                                         ].map((item, index) => (
-                                            <div className='col-12 col-sm-6 col-md-3 col-lg-4 '>
+                                            <div className='col-12 col-sm-6 col-md-3 col-lg-4 attendance_card'>
                                                 <div key={index} className="card border-1 zoom-in them-light shadow-sm">
                                                     <div className="p-2 text-center">
-                                                        <p className="fw-semibold fs-5 text-dark ">{item.label}</p>
+                                                        <p className="fw-semibold fs-4 text-custom-theam">{item.label}</p>
                                                         <h5 className="fw-semibold text-dark mb-0 fs-5">
                                                             {item.value || '-'}
                                                         </h5>
@@ -800,7 +800,7 @@ export default function ManageCoustomer() {
                                     { label: "", value: "" },
                                 ].map((item, index) => (
 
-                                    <div key={index} className="col-md-4 mb-4 border-bottom border-1 pb-2">
+                                    <div key={index} className="col-md-4 mb-4 pb-2">
 
                                         {item?.label == "Reason" ? (<>
                                             <p className="mb-1 fs-4">{item.label}</p>
