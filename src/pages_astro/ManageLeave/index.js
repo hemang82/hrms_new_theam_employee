@@ -503,8 +503,8 @@ export default function ManageCoustomer() {
                                     <span className='me-2'>{rowData?.leave_type || '-'}</span>
                                 )} />
 
-                                <Column field="create_at" header="Request Date" style={{ minWidth: '9rem' }} body={(rowData) => (
-                                    <span className='me-2'>{formatDate(rowData.create_at, DateFormat?.DATE_YEAR_WISE_SLASH_TIME_FORMAT) || '-'} </span>
+                                <Column field="created_at" header="Request Date" style={{ minWidth: '9rem' }} body={(rowData) => (
+                                    <span className='me-2'>{formatDate(rowData.created_at, DateFormat?.DATE_YEAR_WISE_SLASH_TIME_FORMAT) || '-'} </span>
                                 )} />
 
                                 <Column field="is_active" data-pc-section="root" header="Status" style={{ minWidth: '6rem' }} body={(rowData) => (

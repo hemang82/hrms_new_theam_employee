@@ -179,6 +179,11 @@ export const AstroInputTypesEnum = {
     ACCOUNT_NUMBER: 'account_number',
     ACCOUNT_HOLDER_NAME: 'account_holder_name',
 
+    LEAVE_BALANCE: 'leave_balance',
+    EMPLOYEE: 'employee',
+    PROJECT: 'project',
+    TASK: 'task',
+    PRIORITY: 'priority',
 
 
     EMAIL: 'email',
@@ -297,6 +302,13 @@ export const browserOptions = [
     { value: 'opera', label: 'Opera' },
     { value: 'chrome', label: 'Chrome' },
     { value: 'IE', label: 'Internet Explorer' }
+];
+
+export const PROJECT_PRIORITY = [
+    // { key: "", value: "Select Type" },
+    { key: "high", value: "High" },
+    { key: "medium", value: "Medium" },
+    { key: "low", value: "Low" },
 ];
 
 export const countryListData = [
@@ -1827,7 +1839,6 @@ export const emiTypes = {
     },
 };
 
-
 export const getStatus = (status) => {
     return status == "present" ? "Present" :
         status == "absent" ? "Absent" :
@@ -1845,7 +1856,10 @@ export const getStatus = (status) => {
                                                         status === 'half-day work and half-day leave (casual)' ? 'Half work Half Casual' :
                                                             status === 'half-day work and half-day leave (compoff)' ? 'Half work Half Compoff' :
                                                                 status == "working" ? "Working" :
-                                                                    "-"
+                                                                    status == "high" ? "High" :
+                                                                        status == "low" ? "Low" :
+                                                                            status == "medium" ? "Medium" :
+                                                                                status
 };
 
 export const getAttendanceStatusColor = (status) => {
@@ -1864,7 +1878,10 @@ export const getAttendanceStatusColor = (status) => {
                                                     status === 'half-day work and half-day leave (casual)' ? STATUS_COLORS.SUCCESS :
                                                         status === 'half-day work and half-day leave (compoff)' ? STATUS_COLORS.SUCCESS :
                                                             status == "working" ? STATUS_COLORS.SUCCESS :
-                                                                STATUS_COLORS.WARNING
+                                                                status == "high" ? STATUS_COLORS.DANGER :
+                                                                    status == "low" ? STATUS_COLORS.WARNING :
+                                                                        status == "medium" ? STATUS_COLORS.SUCCESS :
+                                                                            STATUS_COLORS.WARNING
 };
 
 export const AttendanceStatus = {
@@ -1912,31 +1929,47 @@ export const AttendanceStatus = {
 
 };
 
-export const AttendanceType = {
-    pre_payment: {
-        label: "Pre Payment",
-        color: STATUS_COLORS.WARNING, // amber
-        border: '#ffa500',
+export const TaskStatus = {
+    to_do: {
+        u_key: 'task_status',
+        label: "To Do",
+        color: "#CCE5FF",       // light blue background
+        border: "#1F7494",
+        textColor: "#1F7494",
     },
-    // forclosure: {
-    //     label: "Foreclosure",
-    //     color: STATUS_COLORS.DANGER, // red
-    //     border: '#c82333',
-    // },
-    emi: {
-        label: "EMI",
-        color: STATUS_COLORS.SUCCESS, // green
-        border: '#1d8149',
+    in_progress: {
+        u_key: 'task_status',
+        label: "In Progress",
+        color: "#CCE5FF",       // light blue background
+        border: "#1F7494",
+        textColor: "#1F7494",
     },
-    foreclosure: {
-        label: "Foreclosure",
-        color: STATUS_COLORS.SUCCESS, // green
-        border: '#1d8149',
+    pending: {
+        u_key: 'task_status',
+        label: "Pending",
+        color: "#FFF3CD",       // light yellow
+        border: "#FFCA2C",
+        textColor: "#856404",
     },
-    due_payment: {
-        label: "Due Payment",
-        color: STATUS_COLORS.DANGER, // red
-        border: '#c82333',
+    completed: {
+        u_key: 'task_status',
+        label: "Completed",
+        color: "#D4EDDA",       // light green
+        border: "#1d8149",
+        textColor: "#155724",
     },
-
+    resolved: {
+        u_key: 'ticket_status',
+        label: "Resolved",
+        color: "#D1ECF1",       // light cyan
+        border: "#0C5460",
+        textColor: "#0C5460",
+    },
+    open: {
+        u_key: 'ticket_status',
+        label: "Open",
+        color: "#F8D7DA",       // light red
+        border: "#c82333",
+        textColor: "#721c24",
+    },
 };

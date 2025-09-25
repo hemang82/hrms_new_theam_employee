@@ -71,6 +71,14 @@ const ManageSaturday = Loadable(lazy(() => import("../pages_astro/ManageSaturday
 
 const ManageBirthday = Loadable(lazy(() => import("../pages_astro/ManageBirthday")));
 
+const ManageProject = Loadable(lazy(() => import("../pages_astro/ManageProject/index.js")));
+const AddProject = Loadable(lazy(() => import("../pages_astro/ManageProject/AddProject.js")));
+
+const AssignTaskList = Loadable(lazy(() => import("../pages_astro/ManageProject/AssignTaskList.js")));
+const AddAssignTask = Loadable(lazy(() => import("../pages_astro/ManageProject/AddAssignTask.js")));
+
+const TicketList = Loadable(lazy(() => import("../pages_astro/ManageProject/TicketList.js")));
+const AddTicket = Loadable(lazy(() => import("../pages_astro/ManageProject/AddTicket.js")));
 
 const Router = () => {
     const navigate = useNavigate();
@@ -90,11 +98,11 @@ const Router = () => {
         }
     }, [islogin, token]);
 
-    
+
     if (!islogin) {
         return (
             <>
-            <Spinner isActive={isLoading} message={'Please Wait...'} />
+                <Spinner isActive={isLoading} message={'Please Wait...'} />
                 <Routes>
                     <Route path="/" element={<Login />} />
                     <Route path="/login" element={<Login />} />
@@ -151,6 +159,18 @@ const Router = () => {
 
                         <Route path={PATHS.MY_PROFILE} element={<MyProfile />} />
 
+
+                        <Route path={PATHS.LIST_PROJECT} element={<ManageProject />} />
+                        <Route path={PATHS.ADD_PROJECT} element={<AddProject />} />
+                        <Route path={PATHS.EDIT_PROJECT} element={<AddProject />} />
+
+                        <Route path={PATHS.LIST_ASSIGN_TASK} element={<AssignTaskList />} />
+                        <Route path={PATHS.ADD_ASSIGN_TASK} element={<AddAssignTask />} />
+                        <Route path={PATHS.EDIT_ASSIGN_TASK} element={<AddAssignTask />} />
+
+                        <Route path={PATHS.LIST_TICKET} element={<TicketList />} />
+                        <Route path={PATHS.ADD_TICKET} element={<AddTicket />} />
+                        <Route path={PATHS.EDIT_TICKET} element={<AddTicket />} />
 
                         <Route path="/emi_payment_charges" element={<ManageEMIPaymentCharges />} />
 

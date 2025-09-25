@@ -55,6 +55,44 @@ export const getAllLoanListThunk = createAsyncThunk("allLoanList", async (submit
     }
 });
 
+export const getProjectListThunk = createAsyncThunk("ProjectList", async (submitData, { dispatch }) => {
+    try {
+        dispatch(setLoader(true))
+        submitData.action = "self"
+        const { data } = await API.listProject(submitData);
+        dispatch(setLoader(false))
+        return data;
+    } catch (error) {
+        throw error;
+    }
+});
+
+export const getAssignTaskListThunk = createAsyncThunk("AssignTaskList", async (submitData, { dispatch }) => {
+    try {
+
+        !submitData?.loader && dispatch(setLoader(true))
+
+        submitData.action = "self"
+        const { data } = await API.listAssignTask(submitData);
+        !submitData?.loader && dispatch(setLoader(false))
+        return data;
+    } catch (error) {
+        throw error;
+    }
+});
+
+export const getListTicketThunk = createAsyncThunk("listTicket", async (submitData, { dispatch }) => {
+    try {
+        !submitData?.loader && dispatch(setLoader(true))
+        submitData.action = "self"
+        const { data } = await API.listTicket(submitData);
+        !submitData?.loader && dispatch(setLoader(false))
+        return data;
+    } catch (error) {
+        throw error;
+    }
+});
+
 export const getlistLeavesThunk = createAsyncThunk("listLeaves", async (submitData, { dispatch }) => {
     try {
         dispatch(setLoader(true))
@@ -233,8 +271,17 @@ const initialState = {
     adminEmployeeList: {
         data: [],
         error: null,
+    }, projectList: {
+        data: [],
+        error: null,
     },
-
+    assignTaskList: {
+        data: [],
+        error: null,
+    }, ticketList: {
+        data: [],
+        error: null,
+    },
 
 
 
@@ -282,7 +329,15 @@ const masterSlice = createSlice({
             state.customModel.modalType = modalType;
             state.customModel.isOpen = isOpen;
         },
-
+        updateProjectList: (state, action) => {
+            state.projectList.data = action.payload;
+        },
+        updateAssignTaskList: (state, action) => {
+            state.assignTaskList.data = action.payload;
+        },
+        updateTicketList: (state, action) => {
+            state.ticketList.data = action.payload;
+        },
 
         // ---------------------- Loan -----------------------------
 
@@ -452,8 +507,26 @@ const masterSlice = createSlice({
             }).addCase(getAdminEmployeeListThunk.rejected, (state, action) => {
                 state.adminEmployeeList.error = action.error.message;
             })
+
+            .addCase(getProjectListThunk.fulfilled, (state, action) => {
+                state.projectList.data = action.payload;
+            }).addCase(getProjectListThunk.rejected, (state, action) => {
+                state.projectList.error = action.error.message;
+            })
+
+            .addCase(getAssignTaskListThunk.fulfilled, (state, action) => {
+                state.assignTaskList.data = action.payload;
+            }).addCase(getAssignTaskListThunk.rejected, (state, action) => {
+                state.assignTaskList.error = action.error.message;
+            })
+
+            .addCase(getListTicketThunk.fulfilled, (state, action) => {
+                state.ticketList.data = action.payload;
+            }).addCase(getListTicketThunk.rejected, (state, action) => {
+                state.ticketList.error = action.error.message;
+            })
     },
 });
 
-export const { setLoader, setModalStatus, updatePostList, updateCategoryList, updateAttendanceList, updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateEMICahrgeList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateCouponCodeList, updateIntrestList, updateBlogList, updateDailyTaskList, updateBannerList, updateCelebrityList, updateLoanList, updateNewsList, updateFilterCategoryList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
+export const { setLoader, setModalStatus, updatePostList, updateCategoryList, updateTicketList, updateAssignTaskList, updateProjectList, updateAttendanceList, updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateEMICahrgeList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateCouponCodeList, updateIntrestList, updateBlogList, updateDailyTaskList, updateBannerList, updateCelebrityList, updateLoanList, updateNewsList, updateFilterCategoryList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
 export default masterSlice.reducer;

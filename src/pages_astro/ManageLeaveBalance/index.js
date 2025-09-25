@@ -47,7 +47,7 @@ export default function ManageLeaveBalance() {
     const [is_load, setis_load] = useState(false);
 
     const { empLeaveBalanceList: { data: empLeaveBalanceList } } = useSelector((state) => state.masterslice);
-    const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
+    const { adminEmployeeList: { data: adminEmployeeList }, } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
 
     const { register, handleSubmit, setValue, clearErrors, reset, watch, trigger, control, formState: { errors } } = useForm();
@@ -127,7 +127,6 @@ export default function ManageLeaveBalance() {
     const [updatedLeaveLeast, setupdatedLeavList] = useState(empLeaveBalanceList);
     const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
 
-
     useEffect(() => {
         const request = {
             emp_leave_company: EMPLOYEE_STATUS[0]?.key,
@@ -135,7 +134,7 @@ export default function ManageLeaveBalance() {
         if (empLeaveBalanceList?.length === 0) {
             dispatch(getEmpLeaveBalanceListThunk(request))
         }
-        if (customerList?.length === 0) {
+        if (adminEmployeeList?.length === 0) {
             dispatch(getDailyTaskListThunk(request));
         }
         setSelectedOption({})
@@ -705,7 +704,7 @@ export default function ManageLeaveBalance() {
                                                             })}
                                                         >
                                                             <option value="">Select employee</option>
-                                                            {selectOptionCustomer(customerList)}
+                                                            {selectOptionCustomer(adminEmployeeList)}
                                                         </select>
                                                     </div>
                                                     <label className="errorc ps-1 pt-1">

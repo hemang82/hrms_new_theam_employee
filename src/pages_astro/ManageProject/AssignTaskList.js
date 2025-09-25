@@ -7,7 +7,7 @@ import $, { data } from 'jquery';
 import 'datatables.net-bs5';
 import 'datatables.net-responsive-bs5';
 import SubNavbar from '../../layout/SubNavbar';
-import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, editAttendance } from '../../utils/api.services';
+import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, editAttendance, deleteProject, deleteAssignTask, editAssignTask } from '../../utils/api.services';
 import { ExportToCSV, ExportToExcel, ExportToPdf, SWIT_DELETE, SWIT_DELETE_SUCCESS, SWIT_FAILED, TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
 import profile_image from '../../assets/Images/default.jpg'
 import ReactDatatable from '../../config/ReactDatatable';
@@ -15,60 +15,41 @@ import { Helmet } from 'react-helmet';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import { getDailyTaskListThunk, getAllLoanListThunk, setLoader, updateLoanList, getProcessingFeeListThunk, getSalaryListThunk, getlistLeavesThunk, updateLeaveList, getlistAttendanceThunk, updateAttendanceList } from '../../Store/slices/MasterSlice';
+import { getAdminEmployeeListThunk, setLoader, getlistLeavesThunk, updateLeaveList, getlistAttendanceThunk, updateAttendanceList, getProjectListThunk, updateProjectList, getAssignTaskListThunk, updateAssignTaskList } from '../../Store/slices/MasterSlice';
 import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, convertToUTC, disableFutureDates, formatDate, formatDateDyjs, formatIndianPrice, getBreakMinutes, getFileNameFromUrl, getLoanStatusObject, getWorkingHours, momentDateFormat, momentTimeFormate, openModel, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
+import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatIndianPrice, getBreakMinutes, getFileNameFromUrl, getLoanStatusObject, getWorkingHours, momentDateFormat, momentNormalDateFormat, momentTimeFormate, openModel, QuillContentRowWise, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
-import { AstroInputTypesEnum, AttendanceStatus, DateFormat, EMPLOYEE_STATUS, getAttendanceStatusColor, getStatus, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS, TimeFormat } from '../../config/commonVariable';
+import { AstroInputTypesEnum, AttendanceStatus, DateFormat, EMPLOYEE_STATUS, getAttendanceStatusColor, getStatus, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS, TaskStatus, TimeFormat } from '../../config/commonVariable';
 import { RiUserReceivedLine } from 'react-icons/ri';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 import 'dayjs/locale/en'; // or your locale
 import { IoAddCircleOutline, IoClose } from 'react-icons/io5';
-import { uploadImageOnAWS } from '../../utils/aws.service';
 import { PATHS } from '../../Router/PATHS';
 // import moment from 'moment';
-import moment from 'moment-timezone';
 import Spinner from '../../component/Spinner';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import cloneDeep from "lodash/cloneDeep";
+import { Select } from 'antd';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export default function ManageAttendance() {
+export default function AssignTaskList() {
 
     let navigat = useNavigate();
     const dispatch = useDispatch();
 
-    const dateFormat = 'YYYY-MM-DD';
-
-    const [totalRows, setTotalRows] = useState(0);
-
-    const [is_load, setis_load] = useState(false);
-
-    const { attendanceList: { data: attendanceList } } = useSelector((state) => state.masterslice);
-    const { dailyTaskList: { data: dailyTaskList }, } = useSelector((state) => state.masterslice);
-
+    const { assignTaskList: { data: assignTaskList } } = useSelector((state) => state.masterslice);
+    const { adminEmployeeList: { data: adminEmployeeList }, } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
-    // const { register, handleSubmit, setValue, clearErrors, reset, watch, trigger, control, formState: { errors } } = useForm();
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        clearErrors,
-        reset,
-        watch,
-        control,
-        trigger,
-        formState: { errors },
-    } = useForm({
+
+    const { register, handleSubmit, setValue, clearErrors, reset, watch, control, trigger, formState: { errors }, } = useForm({
         defaultValues: {
             breaks: [{ start: null, end: null }], // ✅ at least one row
         },
@@ -79,127 +60,105 @@ export default function ManageAttendance() {
         name: "breaks",
     });
 
-    const ALLSTATUS_LIST = [
-        // { key: "", value: "ALL STATUS" },
-        { key: "2", value: "Pending" },
-        { key: "1", value: "Accepted" },
-        { key: "0", value: "Cancelled" },
-    ];
+    const { Option } = Select;
 
     const [selectedEmployee, setSelectedEmployee] = useState(null);
-    const [selectedAttendance, setSelectedAttendance] = useState({})
+    const [selectedAssignTask, setSelectedAssignTask] = useState({})
     const [loading, setLoading] = useState(false);
     const [globalFilterValue, setGlobalFilterValue] = useState('');
-    const debounce = useDebounce(globalFilterValue, SEARCH_DELAY);
     const [filters, setFilters] = useState({ global: { value: '' } });
-    const [statusModal, setStatusModal] = useState(false);
+    const [assignTaskViewModal, setAssignTaskViewModal] = useState(false);
     const [selectedOption, setSelectedOption] = useState({});
     const [sortField, setSortField] = useState(null);
     const [sortOrder, setSortOrder] = useState(-1);
-    const [startDate, setStartDate] = useState(dayjs().startOf("month")); // ✅ 1st day of month
-    const [endDate, setEndDate] = useState(dayjs());       // ✅ last day of month
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
     const [perPage, setPerPage] = useState(10);
     const [page, setPage] = useState(1);
-    const [showProofImage, setShowProofImage] = useState(null);
-    const [proofFileName, setProofFileName] = useState('');
     const [is_loding, setIs_loading] = useState(false);
-    const [updatedAttendanceList, setUpdateAttendanceList] = useState([]);
-    const [attendanceEditModal, setAttendanceEditModel] = useState(false);
+    const [updatedAssignTaskList, setUpdateAssignTaskList] = useState([]);
+    const [projectEditModal, setProjectEditModel] = useState(false);
     const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
 
     useEffect(() => {
+        const request = {
+            emp_leave_company: employeeStatus?.key,
+        };
+        if (adminEmployeeList?.length === 0) {
+            dispatch(getAdminEmployeeListThunk(request));
+        }
         setSelectedOption({})
     }, [])
 
-    const updatedData = (attendanceList, startDate, endDate) => {
-        const start = new Date(startDate);
-        start.setHours(0, 0, 0, 0); // normalize start date
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999); // include full day for end date
-        const modified = attendanceList.flatMap((item) =>
-            item?.dates
-                ?.filter((dates) => {
-                    const currentDate = new Date(dates?.date);
-                    return currentDate >= start && currentDate <= end;
-                }).map((dates) => ({
-                    emp_id: item?.emp_id,
-                    name: item?.name,
-                    date: dates?.date,
-                    type: dates?.type,
-                    status: dates?.status,
-                    checkInTimes: dates?.checkInTimes,
-                    checkOutTimes: dates?.checkOutTimes,
-                    breaks: dates?.breaks,
-                }))
-        );
-        const sorted = modified.sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        setUpdateAttendanceList(sorted);
-    }
-
     useEffect(() => {
-        if (attendanceList && attendanceList?.length > 0 && startDate && endDate) {
-            updatedData(attendanceList, startDate, endDate)
-            // const start = new Date(startDate);
-            // start.setHours(0, 0, 0, 0); // normalize start date
-            // const end = new Date(endDate);
-            // end.setHours(23, 59, 59, 999); // include full day for end date
-            // const modified = attendanceList.flatMap((item) =>
-            //     item?.dates
-            //         ?.filter((dates) => {
-            //             const currentDate = new Date(dates?.date);
-            //             return currentDate >= start && currentDate <= end;
-            //         }).map((dates) => ({
-            //             emp_id: item?.emp_id,
-            //             name: item?.name,
-            //             date: dates?.date,
-            //             type: dates?.type,
-            //             status: dates?.status,
-            //             checkInTimes: dates?.checkInTimes,
-            //             checkOutTimes: dates?.checkOutTimes,
-            //             breaks: dates?.breaks,
-            //         }))
-            // );
-            // const sorted = modified.sort(
-            //     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-            // );
-            // setUpdateAttendanceList(sorted);
-        } else {
-            setUpdateAttendanceList([])
+        if (assignTaskList?.length == 0) {
+            // dispatch(getAssignTaskListThunk({}));
         }
-    }, [attendanceList, employeeStatus]);
+    }, [assignTaskList]);
+
+    const updatedData = (taskList, startDate, endDate, priority) => {
+
+        let start, end;
+
+        if (startDate) {
+            start = new Date(startDate);
+            start.setHours(0, 0, 0, 0);
+        }
+        if (endDate) {
+            end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+        }
+
+        const filtered = taskList?.filter((task) => {
+            const currentDate = new Date(task?.due_date);
+
+            // ✅ Date filter
+            let dateCondition = true;
+            if (start && !end) dateCondition = currentDate >= start;
+            else if (!start && end) dateCondition = currentDate <= end;
+            else if (start && end) dateCondition = currentDate >= start && currentDate <= end;
+
+            // ✅ Priority filter
+            let priorityCondition = true;
+            if (priority) {
+                priorityCondition = task?.priority?.toLowerCase() === priority.toLowerCase();
+            }
+            return dateCondition && priorityCondition;
+        });
+
+        const sorted = filtered?.sort(
+            (a, b) => new Date(b.due_date).getTime() - new Date(a.due_date).getTime()
+        );
+
+        setUpdateAssignTaskList(sorted);
+    };
 
     useEffect(() => {
-        let request = {
-            fromDate: startDate ? formatDateDyjs(startDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
-            toDate: endDate ? formatDateDyjs(endDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
-            // status: selectedOption?.key || "",
-            // emp_leave_company: employeeStatus?.key,
-        };
-        dispatch(getlistAttendanceThunk(request));
-    }, []);
+        if (assignTaskList && assignTaskList?.length > 0) {
+            updatedData(assignTaskList)
+        } else {
+            setUpdateAssignTaskList([])
+        }
+    }, [assignTaskList, startDate]);
 
     const handleDelete = (is_true) => {
         if (is_true) {
-            // dispatch(setLoader(true));
-            // let submitData = {
-            //     loan_id: selectedAttendance?.id,
-            //     is_deleted: true,
-            // }
-            // updateLoanDetails(submitData).then((response) => {
-            //     if (response.status_code === Codes?.SUCCESS) {
-            //         setis_load(false)
-            //         const updatedList = attendanceList?.filter((item) => item.id !== selectedAttendance?.id)
-            //         dispatch(updateLoanList({
-            //             ...attendanceList,
-            //             loan_applications: updatedList
-            //         }))
-            //         closeModel(dispatch)
-            //         dispatch(setLoader(false))
-            //         TOAST_SUCCESS(response?.message);
-            //     }
-            // });
+            dispatch(setLoader(true));
+            let submitData = {
+                task_id: selectedAssignTask?.id,
+            }
+            deleteAssignTask(submitData).then((response) => {
+                if (response.code == Codes?.SUCCESS) {
+                    const updatedList = assignTaskList?.filter((item) => item.id !== selectedAssignTask?.id)
+                    dispatch(updateAssignTaskList(updatedList))
+                    closeModel(dispatch)
+                    dispatch(setLoader(false))
+                    TOAST_SUCCESS(response?.message);
+                } else {
+                    TOAST_ERROR(response?.message);
+                    dispatch(setLoader(false))
+                }
+            });
         }
     };
 
@@ -213,6 +172,8 @@ export default function ManageAttendance() {
         setPage(1)
         setGlobalFilterValue(value?.trim());
     };
+
+    // ----------------------------------Export Data----------------------------------
 
     const onPageChange = (Data) => {
         setPage(Data)
@@ -247,7 +208,7 @@ export default function ManageAttendance() {
                 dispatch(setLoader(false))
                 TOAST_SUCCESS(response?.message);
 
-                let updatedList = cloneDeep(updatedAttendanceList); // shallow copy (optional, if immutability needed)
+                let updatedList = cloneDeep(updatedAssignTaskList); // shallow copy (optional, if immutability needed)
                 let target = updatedList.find(item => item.emp_id == selectedEmployee?.id);
                 if (target) {
                     target.checkInTimes = data?.checkIn ? [convertToUTC(sendRequest?.date, sendRequest?.check_in_time, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT)] : [];
@@ -260,7 +221,7 @@ export default function ManageAttendance() {
                     })) : [];
                 }
                 console.log("updatedList", updatedList);
-                setUpdateAttendanceList(updatedList);
+                setUpdateAssignTaskList(updatedList);
 
                 closeAttendanceModel()
             } else {
@@ -270,45 +231,20 @@ export default function ManageAttendance() {
     }
 
     const openModelFunc = (data) => {
-        setStatusModal(true)
-        setSelectedAttendance(data)
+        setAssignTaskViewModal(true)
+        setSelectedAssignTask(data)
     }
 
     const closeModelFunc = () => {
-        setStatusModal(false)
-        setSelectedAttendance({})
-    }
-
-    const openAttendanceModel = (attendanceData) => {
-        setAttendanceEditModel(true)
-        setSelectedAttendance(attendanceData)
-
-        // const formattedBreaks = attendanceData?.breaks?.map(b => ({
-        //     start: b.start ? dayjs(momentTimeFormate(b.start, 'HH:mm:ss'), 'HH:mm:ss').format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null,
-        //     end: b.end ? dayjs(momentTimeFormate(b.end, 'HH:mm:ss'), 'HH:mm:ss').format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null
-        // }));
-
-        // setValue('breaks', formattedBreaks);
-        // // const selectedObj = customerList?.find((c) => String(c.id) === String(attendanceData?.emp_id));
-        // // setSelectedEmployee(selectedObj || null);
-        // // setValue(AstroInputTypesEnum?.EMPLOYEE, selectedObj.id)
-        // setValue('dob1', attendanceData?.date ? dayjs(attendanceData?.date).format('DD-MM-YYYY') : null);
-
-        // setValue('checkIn', attendanceData?.checkInTimes?.[0] ? dayjs(`${attendanceData.date} ${momentTimeFormate(attendanceData.checkInTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss') : null);
-        // setValue('checkOut', attendanceData?.checkOutTimes?.[0] ? dayjs(`${attendanceData.date} ${momentTimeFormate(attendanceData.checkOutTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss') : null);
-
+        setAssignTaskViewModal(false)
+        setSelectedAssignTask({})
     }
 
     const closeAttendanceModel = () => {
-        setAttendanceEditModel(false)
-        setSelectedAttendance({})
+        setProjectEditModel(false)
+        setSelectedAssignTask({})
         reset()
     }
-
-    const handleSelect = (option) => {
-        setSelectedOption(option);
-        setPage(1);
-    };
 
     const handleSort = (event) => {
         console.log("Sort event triggered:", event);
@@ -323,185 +259,105 @@ export default function ManageAttendance() {
         return current.isBefore(startDate, 'day');
     };
 
-    const handleInputChange = async (key, value) => {
-        let filteredValue = value;
-        if (key === 'approved_amount') {
-            filteredValue = value.replace(InputRegex.ONCHANGE_MOBILE_REGEX, '');
-        }
-        setValue(key, filteredValue)
-        clearErrors(key);               // Clear error message (if any)
-        await trigger(key);
-    };
-
-    const allowLettersAndSpaces = (event) => {
-        let value = event.target.value;
-        // Remove any characters that are not letters or spaces
-        value = value.replace(/[^A-Za-z\s]/g, '');
-        // Convert to uppercase
-        value = value.toUpperCase();
-        // Update the input value
-        event.target.value = value;
-    };
-
-    const handleProofImageChange = (e) => {
-        const image = e.target.files[0]
-        setShowProofImage(image)
-        setProofFileName(image?.name)
-        clearErrors('proof_image');
-    };
-
     const onChangeApiCalling = async (data) => {
         try {
-            const request = {
-                fromDate: data?.start_date ? formatDateDyjs(data.start_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
-                toDate: data?.end_date ? formatDateDyjs(data.end_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
-                // employee_id: data?.employee_id || "",
-                // emp_leave_company: data?.emp_leave_company || "0"
-            };
-            await dispatch(getlistAttendanceThunk(request));
+            // const request = {
+            //     start_date: data?.start_date ? formatDateDyjs(data.start_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
+            //     end_date: data?.end_date ? formatDateDyjs(data.end_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
+            //     employee_id: data?.employee_id || "",
+            //     emp_leave_company: data?.emp_leave_company || "0"
+            // };
+            // await dispatch(getlistAttendanceThunk(request));
+            updatedData(assignTaskList, data?.start_date ? formatDateDyjs(data.start_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null, data?.end_date ? formatDateDyjs(data.end_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null);
         } finally {
         }
+    };
+
+    const StatusColumn = ({ rowData }) => {
+
+        const handleChange = (value, taskId) => {
+            console.log(`Status changed to: ${value} ${taskId}`);
+
+            editAssignTask({
+                status: value,
+                task_id: rowData?.id
+            }).then((response) => {
+                if (response?.code == Codes.SUCCESS) {
+                    TOAST_SUCCESS(response?.message);
+                    dispatch(getAssignTaskListThunk({ loader: true }));
+                } else {
+                    TOAST_ERROR(response.message);
+                }
+            });
+        };
+
+        const getStatusStyle = (statusKey) => {
+            const status = TaskStatus[statusKey];
+            return {
+                backgroundColor: status?.color,
+                color: status?.textColor || '#000',
+                borderRadius: 6,
+                padding: '2px 8px',
+                textAlign: 'center',
+            };
+        };
+
+        return (
+            <Select
+                defaultValue={rowData?.status || 'open'}
+                style={{ width: 120 }}
+                onChange={handleChange}
+                dropdownMatchSelectWidth={false}
+                optionLabelProp="label"
+                className="task-status"
+                value={rowData?.status || 'open'} // Ensure value is passed to maintain default
+            >
+                {Object.entries(TaskStatus).map(([key, { label, u_key }]) => (<>
+                    {u_key == "task_status" &&
+                        <Option
+                            key={key}
+                            value={key}
+                            label={<div style={getStatusStyle(key)} className='task_list_item'>{label}</div>}
+                        >
+                            <div style={getStatusStyle(key)}>{label}</div>
+                        </Option>
+
+                    }</>))}
+            </Select>
+        );
     };
 
     return (
         <>
             {<Spinner isActive={is_loding} message={'Please Wait'} />}
+
             <div className="container-fluid mw-100">
-                <SubNavbar title={"Attendance List"} header={'Attendance List'} />
+
+                <SubNavbar title={"Assign Task List"} header={'Assign Task List'} />
 
                 <div className="widget-content searchable-container list">
-
-                    {/* --------------------- start Contact ---------------- */}
 
                     <div className="card card-body mb-2 p-3">
                         <div className="row g-2">
 
-                            <div className="col-12 col-md-6 col-lg-3">
-                                <div className="position-relative mt-4 w-100">
+                            <div className="col-12 col-md-6 col-lg-4">
+                                <div className="position-relative mt-4 w-75">
                                     <input
                                         type="text"
                                         className="form-control ps-5 "
                                         id="input-search"
-                                        placeholder="Search Attendance ..."
+                                        placeholder="Search Assign Task ..."
                                         value={globalFilterValue}
                                         onChange={onGlobalFilterChange}
                                     />
                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
                                 </div>
                             </div>
-                            {/* <div className="col-12 col-md-6 col-lg-2 d-flex flex-column"> */}
-                            {/* <label className="form-label fw-semibold mb-1">Employees Filter</label>
-                                <div className="dropdown w-100">
-                                    <button
-                                        className="btn btn-sm btn-info fw-semibold dropdown-toggle w-100"
-                                        type="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                        style={{ height: '40px' }}
-                                    >
-                                        {selectedOption?.name || 'Select Employee'}
-                                    </button>
-                                    <ul
-                                        className="dropdown-menu w-100"
-                                        style={{
-                                            maxHeight: "300px", // adjust height as needed
-                                            overflowY: "auto",
-                                        }}
-                                    >
-                                        <li key="all">
-                                            <button
-                                                className="dropdown-item text-black-50 p-2 fs-4"
-                                                type="button"
-                                                onClick={() => {
-                                                    onChangeApiCalling({
-                                                        start_date: startDate,
-                                                        end_date: endDate,
-                                                        employee_id: "" // empty for all employees
-                                                    });
-                                                    handleSelect({ id: "", name: "All Employees" });
-                                                }}
-                                            >
-                                                All Employees
-                                            </button>
-                                        </li>
-                                        {customerList?.map((option) => (
-                                            <li key={option.id}>
-                                                <button
-                                                    className="dropdown-item text-black-50 p-2"
-                                                    type="button"
-                                                    onClick={() => {
-                                                        onChangeApiCalling({
-                                                            start_date: startDate,
-                                                            end_date: endDate,
-                                                            employee_id: option?.id
-                                                        });
-                                                        handleSelect(option);
-                                                    }}
-                                                >
-                                                    {option?.name}
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div> */}
-                            {/* </div> */}
 
-                            <div className="col-12 col-md-6 col-lg-2 mb-2 mb-md-0">
-                                {/* <label className="form-label fw-semibold mb-1">Status</label>
-
-                                <div className="btn-group w-100">
-                                    <button
-                                        type="button"
-                                        className="btn btn-info dropdown-toggle w-100"
-                                        data-bs-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false"
-                                        style={{ height: '40px' }}
-                                    >
-                                        {employeeStatus?.value || 'Select Status'}
-                                    </button>
-                                    <ul className="dropdown-menu w-100 border">
-                                        {EMPLOYEE_STATUS?.map((option) => (
-                                            <li key={option.key}>
-                                                <a
-                                                    className="dropdown-item cursor_pointer text-black-50"
-                                                    onClick={() => {
-                                                        onChangeApiCalling({
-                                                            start_date: startDate,
-                                                            end_date: endDate,
-                                                            employee_id: "",
-                                                            emp_leave_company: option?.key
-                                                        });
-                                                        setEmployeeStatus(option)
-                                                    }}
-                                                >
-                                                    {option?.value}
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div> */}
-                            </div>
-
-                            {/* <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
-                                <label className="form-label fw-semibold mb-1">&nbsp;</label>
-                                <button
-                                    type="button"
-                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center w-100"
-                                    style={{ height: '40px' }}
-                                    // onClick={() => navigat(PATHS.ADD_ATTENDANCE)}
-                                    onClick={() => { openAttendanceModel() }}
-                                >
-                                    <IoAddCircleOutline className="me-1" style={{ fontSize: '1.2rem' }} />
-                                    <span className="fw-semibold">Add</span>
-                                </button>
-                            </div> */}
-
-                            <div className="col-12 col-md-6 col-lg-3">
+                            <div className="col-12 col-md-6 col-lg-4 d-flex flex-column">
 
                             </div>
 
-                            {/* Start Date */}
                             <div className="col-12 col-md-6 col-lg-2">
                                 <label className="d-block mb-1 fw-semibold">Start Date</label>
                                 <DatePicker
@@ -512,11 +368,9 @@ export default function ManageAttendance() {
                                         setStartDate(date);
                                         setEndDate(null);
                                     }}
-                                    disabledDate={disableFutureDates}
                                 />
                             </div>
 
-                            {/* End Date */}
                             <div className="col-12 col-md-6 col-lg-2">
                                 <label className="d-block mb-1 fw-semibold">End Date</label>
                                 <DatePicker
@@ -529,21 +383,21 @@ export default function ManageAttendance() {
                                         onChangeApiCalling({
                                             end_date: end_date,
                                             start_date: startDate,
-                                            status: ""
                                         })
                                     }}
-                                    disabled={!startDate}
                                     disabledDate={disabledEndDate}
+                                    disabled={!startDate}
                                 />
                             </div>
+
+
                         </div>
                     </div>
 
                     <div className="card card-body">
-
                         <div className="table-responsive">
                             <DataTable
-                                value={updatedAttendanceList?.length > 0 ? updatedAttendanceList : []}
+                                value={updatedAssignTaskList?.length > 0 ? updatedAssignTaskList : []}
                                 paginator
                                 rows={50}
                                 globalFilter={globalFilterValue}
@@ -551,15 +405,15 @@ export default function ManageAttendance() {
                                 sortOrder={sortOrder}
                                 onSort={handleSort}
                                 rowsPerPageOptions={
-                                    updatedAttendanceList?.length > 50
-                                        ? [20, 30, 50, updatedAttendanceList?.length]
+                                    updatedAssignTaskList?.length > 50
+                                        ? [20, 30, 50, updatedAssignTaskList?.length]
                                         : [20, 30, 40]
                                 }
                                 currentPageReportTemplate='Showing {first} to {last} of {totalRecords} entries'
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 loading={loading}
                                 // globalFilterFields={['name', 'annual_income']}
-                                emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>Attendance Not Found.</span>}>
+                                emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>Task Not Found.</span>}>
 
                                 <Column field="id"
                                     header="Id"
@@ -569,50 +423,41 @@ export default function ManageAttendance() {
                                 // sortable
                                 />
 
-                                <Column field="name" header="Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
-                                    <span className='me-2'>{truncateWords(rowData.name) || '-'} </span>
+                                <Column field="project_name" header="Project Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
+                                    <span className='me-2'>{truncateWords(rowData?.project_name) || '-'} </span>
                                 )} />
 
-                                <Column field="date" header="Date" sortable style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <span className='me-2'>{momentDateFormat(rowData?.date, DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT) || '-'} </span>
+                                <Column field="title" header="Title" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
+                                    <span className='me-2'>{truncateWords(rowData?.title) || '-'} </span>
                                 )} />
 
-                                <Column field="checkInTimes" header="Check In" style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <span className='me-2'>
-                                        {rowData?.checkInTimes[0]?.length > 0 ? momentTimeFormate(rowData?.checkInTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-"} </span>
+
+                                <Column field="created_at" header="Assign Date" sortable style={{ minWidth: '10rem' }} body={(rowData) => (
+                                    <span className='me-2'>{momentDateFormat(rowData?.created_at, DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT) || '-'} </span>
                                 )} />
 
-                                <Column field="checkInTimes" header="Check Out" style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <span className='me-2'>{rowData?.checkOutTimes[0]?.length > 0 ? momentTimeFormate(rowData?.checkOutTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-"} </span>
+                                <Column field="due_date" header="Deadline Date" sortable style={{ minWidth: '10rem' }} body={(rowData) => (
+                                    <span className='me-2'>{momentDateFormat(rowData?.due_date, DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT) || '-'} </span>
                                 )} />
 
-                                <Column field="checkInTimes" header="Work Hours" style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <span className=''>{rowData?.checkInTimes[0]?.length > 0 ? getWorkingHours(rowData?.checkInTimes[0], rowData?.checkOutTimes[0], getBreakMinutes(rowData?.breaks?.length > 0 ? rowData?.breaks : [] || 0)) || '-' : "-"} </span>
-                                )} />
 
-                                <Column field="type" sortable data-pc-section="root" header="Day Type" style={{ minWidth: '8rem' }} body={(rowData) => (
+                                <Column
+                                    field="status"
+                                    header="Status"
+                                    sortable
+                                    style={{ minWidth: '10rem' }}
+                                    body={(rowData) => <StatusColumn rowData={rowData} />}
+                                />
+
+                                <Column field="priority" sortable data-pc-section="root" header="Priority" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <>
                                         <span
-                                            className={`p-tag p-component badge p-1 text-light fw-semibold px-3 status_font rounded-4 py-2 ${getAttendanceStatusColor(rowData?.type) || "bg-secondary"}`}
+                                            className={`p-tag p-component badge p-1 text-light fw-semibold px-3 status_font rounded-4 py-2 ${getAttendanceStatusColor(rowData?.priority) || "bg-secondary"}`}
                                             data-pc-name="tag"
                                             data-pc-section="root"
                                         >
                                             <span className="p-tag-value fs-2" data-pc-section="value">
-                                                {getStatus(rowData?.type) || "-"}
-                                            </span>
-                                        </span>
-                                    </>
-                                )} />
-
-                                <Column field="status" sortable data-pc-section="root" header="Status" style={{ minWidth: '8rem' }} body={(rowData) => (
-                                    <>
-                                        <span
-                                            className={`p-tag p-component badge  text-light fw-semibold px-2 rounded-4 py-1 status_font ${getAttendanceStatusColor(rowData?.status) || "bg-secondary"}`}
-                                            data-pc-name="tag"
-                                            data-pc-section="root"
-                                        >
-                                            <span className="p-tag-value fs-2" data-pc-section="value">
-                                                {getStatus(rowData?.status) || "-"}
+                                                {getStatus(rowData?.priority) || "-"}
                                             </span>
                                         </span>
                                     </>
@@ -621,158 +466,126 @@ export default function ManageAttendance() {
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
 
-                                        {/* <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => navigat(PATHS?.EDIT_ATTENDANCE, { state: rowData })} >
-                                            <i class="ti ti-edit fs-7"></i>
-                                        </a> */}
-
-                                        {/* <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
+                                        {/* <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => navigat(PATHS?.EDIT_ASSIGN_TASK, { state: rowData })} >
                                             <i class="ti ti-edit fs-7"></i>
                                         </a> */}
 
                                         <Link onClick={() => {
-                                            if (rowData?.breaks?.length > 0) {
-                                                openModelFunc(rowData);
-                                            }
+                                            openModelFunc(rowData);
                                         }}
                                             state={rowData}
-                                            className={`text-info edit ${rowData?.breaks?.length > 0 ? "cursor_pointer text-custom-theam" : "disabled-status"}`}
+                                            className={`text-info edit cursor_pointer text-custom-theam`}
                                         >
                                             <i className="ti ti-eye fs-7" />
                                         </Link>
-
+                                        {/* <a className="text-dark delete ms-2 cursor_pointer text-custom-theam" onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedAssignTask(rowData) }}>
+                                            <i className="ti ti-trash fs-7 text-danger" />
+                                        </a> */}
                                     </div>
                                 )} />
+
                             </DataTable>
 
                             <div className=''>
-                                <Pagination per_page={50 || perPage} pageCount={attendanceList?.total_count} onPageChange={onPageChange} page={page} />
+                                <Pagination per_page={50 || perPage} pageCount={assignTaskList?.total_count} onPageChange={onPageChange} page={page} />
                             </div>
 
                         </div>
-
                     </div>
                 </div>
             </div>
 
-            <div className={`modal custom-modal  ${statusModal ? "fade show d-block " : "d-none"}`}
+            <div className={`modal custom-modal  ${assignTaskViewModal ? "fade show d-block " : "d-none"}`}
                 id="addnotesmodal" tabIndex={-1} role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
+
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title fs-5">{'Attendance Details'} </h6>
+                            <h6 className="modal-title fs-5">{'Assign Task Details'} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeModelFunc() }} />
                         </div>
 
-                        <div className="modal-body">
-                            <div className="container py-3">
-                                <div className="row">
+                        <div className="modal-body ">
+                            <div className="row m-2">
+                                {[
+                                    { label: "Assign Date", value: momentNormalDateFormat(selectedAssignTask?.created_at, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' },
+                                    { label: "Deadline Date", value: momentNormalDateFormat(selectedAssignTask?.due_date, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' },
+                                    { label: "Task Title", value: selectedAssignTask?.title },
+                                    { label: "Project Name", value: selectedAssignTask?.project_name },
+                                    { label: "Status", value: TaskStatus[selectedAssignTask?.status]?.label || "-" },
+                                    { label: "Priority", value: selectedAssignTask?.priority },
                                     {
-                                        selectedAttendance &&
-                                        <div className="col-12 justify-content-center">
-                                            <div className="mb-3">
-                                                <div className="row">
-                                                    {[
-                                                        // { label: "Employee Id", value: selectedEmployee?.employee_id },
-                                                        { label: "Date", value: momentDateFormat(selectedAttendance?.date, DateFormat?.DATE_FORMAT) || '-' },
-                                                        { label: "Total Work Hours", value: getWorkingHours(selectedAttendance?.checkInTimes?.length > 0 ? selectedAttendance?.checkInTimes[0] : 0, selectedAttendance?.checkOutTimes?.length > 0 ? selectedAttendance?.checkOutTimes[0] : 0, getBreakMinutes(selectedAttendance?.breaks || '-')) || '-' },
-                                                        {
-                                                            label: "Check In",
-                                                            value: selectedAttendance?.checkInTimes?.[0]
-                                                                ? dayjs(`${selectedAttendance?.date} ${momentTimeFormate(selectedAttendance?.checkInTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss').format(TimeFormat?.TIME_12_HOUR_FORMAT)
-                                                                : '-'
-                                                        },
-                                                        {
-                                                            label: "Check Out",
-                                                            value: selectedAttendance?.checkOutTimes?.[0]
-                                                                ? dayjs(`${selectedAttendance?.date} ${momentTimeFormate(selectedAttendance?.checkOutTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss').format(TimeFormat?.TIME_12_HOUR_FORMAT)
-                                                                : '-'
-                                                        },
-                                                        { label: "Break Timeline", value: "-" },
-                                                        { label: "Total Break", value: selectedAttendance?.breaks?.length > 0 ? getBreakMinutes(selectedAttendance?.breaks) + 'm' : "-" },
-                                                    ].map((item, index) => (<>
-                                                        <div className='col-12 col-sm-6 attendance_card'>
-                                                            <div key={index} className="card border-1 them-light shadow-sm mt-2 ">
-                                                                <div className="card-body text-center m-1 p-1">
-                                                                    <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
-                                                                    {
-                                                                        item.label == "Break Timeline" ? (<>
-                                                                            <div className="timeline position-relative ms-4">
-
-                                                                                <div className="border-custom-theam border-2 position-absolute top-0 bottom-0 start-0" style={{ marginLeft: "7px" }} ></div>
-                                                                                {selectedAttendance?.breaks?.length > 0 && selectedAttendance?.breaks?.map((b, index) => (
-                                                                                    <div key={index}>
-                                                                                        <div className="mt-2 d-flex align-items-start">
-                                                                                            <i className="bi bi-circle-fill text-success fs-5 me-3"></i>
-                                                                                            <div>
-                                                                                                <span className="badge bg-light text-dark fs-4 fw-medium">
-                                                                                                    {momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - {momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)}
-                                                                                                </span>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                ))}
-
-                                                                            </div>
-                                                                        </>) : (<>
-                                                                            <h5 className="fw-medium text-dark mb-0 fs-5">
-                                                                                {item?.value || '0'}
-                                                                            </h5>
-                                                                        </>)
-                                                                    }
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </>))}
-
-                                                    {/* <div className='col-12 col-sm-6 attendance_card'>
-                                                        <div className="card border-1 them-light shadow-sm mt-2 ">
-                                                            <div className="card-body text-center m-1 p-1">
-
-                                                                <p className="fw-semibold fs-4 text-custom-theam ">Break Timeline</p>
-
-                                                                <div className="timeline position-relative ms-4">
-
-                                                                    <div className=" border-custom-theam border-2 position-absolute top-0 bottom-0 start-0" style={{ marginLeft: "7px" }} ></div>
-                                                                    {selectedAttendance?.breaks?.length > 0 && selectedAttendance?.breaks?.map((b, index) => (
-                                                                        <div key={index}>
-                                                                            <div className="mt-2 d-flex align-items-start">
-                                                                                <i className="bi bi-circle-fill text-success fs-5 me-3"></i>
-                                                                                <div>
-                                                                                    <span className="badge bg-light text-dark fs-4 fw-medium">
-                                                                                        {momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - {momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)}
-                                                                                    </span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    ))}
-
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div> */}
-                                                </div>
+                                        label: "Team Member",
+                                        value: selectedAssignTask?.assigned_employee_names
+                                            ? (
+                                                <ul className="mb-1 ps-3 ">
+                                                    {selectedAssignTask.assigned_employee_names
+                                                        .split(",")
+                                                        .map(name => name.trim())
+                                                        .map((name, index) => (
+                                                            <li key={index} className='fs-4 pb-1 pt-1'>{index + 1}. {name}</li>
+                                                        ))}
+                                                </ul>
+                                            ) : "-"
+                                    },
+                                    { label: "Task Description", value: QuillContentRowWise(selectedAssignTask?.description ? selectedAssignTask?.description : "") },
+                                ].map((item, index) => (<>
+                                    {
+                                        item.label == "Task Description" ? (<>
+                                            <div key={index} className="col-12 mb-3 pb-2 border-1 border-bottom">
+                                                {
+                                                    item.value && <>
+                                                        <p className="mb-1 fs-3">{item.label}</p>
+                                                        <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6>
+                                                    </>
+                                                }
                                             </div>
-                                        </div>
+                                        </>) : item.label == "Priority" ? (
+                                            <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
+                                                <p className="mb-1 fs-3">{item.label}</p>
+                                                <span className={`p-tag p-component badge p-1 text-light fw-semibold px-3 status_font rounded-4 py-2 ${getAttendanceStatusColor(selectedAssignTask?.priority) || "bg-secondary"}`}
+                                                    data-pc-name="tag"
+                                                    data-pc-section="root" >
+                                                    <span className="p-tag-value fs-2" data-pc-section="value">
+                                                        {getStatus(selectedAssignTask?.priority) || "-"}
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        ) : (<>
+
+                                            <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
+                                                {
+                                                    item.value &&
+                                                    <>
+                                                        <p className="mb-1 fs-3">{item.label}</p>
+                                                        <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6>
+                                                    </>
+                                                }
+                                            </div>
+
+                                        </>)
                                     }
-                                </div>
+                                </>))}
+
+
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div >
             {
-                statusModal && (
+                assignTaskViewModal && (
                     <div className="modal-backdrop fade show"></div>
                 )
             }
 
-            <div className={`modal custom-modal  ${attendanceEditModal ? "fade show d-block " : "d-none"}`}
+            <div className={`modal custom-modal  ${projectEditModal ? "fade show d-block " : "d-none"}`}
                 id="addnotesmodal" tabIndex={-1} role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
-
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h3 className="modal-title fs-5">{attendanceEditModal ? 'Edit Attendance Details' : 'Add Attendance Details'} </h3>
+                            <h3 className="modal-title fs-5">{projectEditModal ? 'Edit Attendance Details' : 'Add Attendance Details'} </h3>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeAttendanceModel() }} />
                         </div>
 
@@ -784,13 +597,16 @@ export default function ManageAttendance() {
                                         <div className="mb-3">
                                             <div className="row">
                                                 {[
+                                                    // { label: "Employee Id", value: selectedEmployee?.employee_id },
+                                                    // { label: "Name", value: selectedEmployee?.name },
+                                                    // { label: "Gender", value: selectedEmployee?.gender == "M" ? "Male" : selectedEmployee?.gender == "F" ? "Female" : "Other" },
                                                     { label: "Work Hours", value: getWorkingHours(watch('checkIn') ? dayjs(watch('checkIn')).format("HH:mm:ss") : 0, dayjs(watch('checkOut') || dayjs()).format("HH:mm:ss"), getBreakMinutes(watch('breaks') || 0)) || 0 },
                                                     { label: "Total Break", value: getBreakMinutes(watch('breaks')) + 'm' || '-' },
                                                 ].map((item, index) => (
                                                     <div className='col-12 col-sm-6'>
                                                         <div key={index} className="card border-1 zoom-in them-light shadow-sm m-1 ">
                                                             <div className="card-body text-center m-1 p-1">
-                                                                <p className="fw-semibold fs-6 text-dark ">{item.label}</p>
+                                                                <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
                                                                 <h5 className="fw-semibold text-dark mb-0 fs-5">
                                                                     {item.value || '-'}
                                                                 </h5>
@@ -819,13 +635,14 @@ export default function ManageAttendance() {
                                                 })}
                                                 onChange={(e) => {
                                                     const selectedId = e.target.value;
-                                                    // const selectedObj = customerList.find((c) => String(c.id) === String(selectedId));
-                                                    // console.log('selectedObjselectedObj', selectedObj);
-                                                    // setSelectedEmployee(selectedObj || null);
-                                                    // setValue(AstroInputTypesEnum?.EMPLOYEE_ID, selectedObj.id)
+                                                    const selectedObj = adminEmployeeList.find((c) => String(c.id) === String(selectedId));
+                                                    console.log('selectedObjselectedObj', selectedObj);
+                                                    setSelectedEmployee(selectedObj || null);
+                                                    setValue(AstroInputTypesEnum?.EMPLOYEE_ID, selectedObj.id)
                                                 }}
                                             >
                                                 <option value="">Select employee</option>
+                                                {selectOptionCustomer(adminEmployeeList)}
                                             </select>
                                         </div>
                                         <label className="errorc ps-1 pt-1">
@@ -847,13 +664,15 @@ export default function ManageAttendance() {
                                                         id="dob1"
                                                         picker="date"
                                                         className="form-control custom-datepicker w-100"
-                                                        format={DateFormat?.DATE_FORMAT}
+                                                        format={DateFormat?.DATE_FORMAT} // ✅ change format as needed
                                                         value={field.value ? dayjs(field.value, DateFormat?.DATE_FORMAT) : null}
+                                                        // onChange={(date) => field.onChange(date ? date.toISOString() : null)}                                                        allowClear={false}
                                                         onChange={(date) => field.onChange(date ? dayjs(date).format(DateFormat?.DATE_FORMAT) : null)}
                                                     />
                                                 )}
                                             />
 
+                                            {/* ✅ Error Message */}
                                             {errors.dob1 && (
                                                 <small className="text-danger">{errors.dob1.message}</small>
                                             )}
@@ -1007,6 +826,7 @@ export default function ManageAttendance() {
                                             </div>
                                         ))}
 
+                                        {/* ✅ Add Break Row */}
                                         <button
                                             type="button"
                                             className="btn btn-primary"
@@ -1028,7 +848,7 @@ export default function ManageAttendance() {
                 </div>
             </div >
             {
-                attendanceEditModal && (
+                projectEditModal && (
                     <div className="modal-backdrop fade show"></div>
                 )
             }

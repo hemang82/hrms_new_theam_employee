@@ -59,8 +59,6 @@ export default function AddCustomer() {
             CustomerDetails({ employee_id: userData?.id.toString() }).then((response) => {
                 if (response?.code == Codes.SUCCESS) {
                     let responseDetails = response?.data;
-                    console.log('responseDetailsresponseDetails', responseDetails);
-
                     setValue(AstroInputTypesEnum?.NAME, responseDetails?.name);
                     setValue(AstroInputTypesEnum?.EMAIL, responseDetails?.email);
                     setValue(AstroInputTypesEnum?.MOBILE, responseDetails?.phone_number);

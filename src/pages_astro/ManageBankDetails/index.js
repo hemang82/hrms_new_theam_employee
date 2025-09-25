@@ -48,7 +48,7 @@ export default function ManageLeaveBalance() {
     const [selectedUser, setSelectedUser] = useState()
 
     const { bankDetailsList: { data: bankDetailsList } } = useSelector((state) => state.masterslice);
-    const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
+    const { adminEmployeeList: { data: adminEmployeeList }, } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
 
     const { register, handleSubmit, setValue, clearErrors, reset, watch, trigger, control, formState: { errors } } = useForm();
@@ -131,7 +131,7 @@ export default function ManageLeaveBalance() {
         const request = {
             emp_leave_company: employeeStatus?.key,
         };
-        if (customerList?.length === 0) {
+        if (adminEmployeeList?.length === 0) {
             dispatch(getDailyTaskListThunk(request));
         }
     }, [])
@@ -513,7 +513,7 @@ export default function ManageLeaveBalance() {
                                     <Link
                                         // to="/user_list/add_user"
                                         id="btn-add-contact"
-                                        className="btn btn-info d-flex align-items-center justify-content-center w-100 w-md-auto"
+                                        className="btn btn-info d-flex align-items-center justify-content-center w-100 w-md-auto "
                                         style={{ height: '40px' }}
                                         onClick={() => { openBankDetailsModelFunc() }}
                                     >
@@ -648,7 +648,7 @@ export default function ManageLeaveBalance() {
                                                         })}
                                                     >
                                                         <option value="">Select employee</option>
-                                                        {selectOptionCustomer(customerList)}
+                                                        {selectOptionCustomer(adminEmployeeList)}
                                                     </select>
                                                 </div>
                                                 <label className="errorc ps-1 pt-1">

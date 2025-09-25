@@ -30,11 +30,20 @@ const ADMIN_HOLIDAYS = "admin_holidays";
 const EMPLOYEE_LEAVE = "employee_leave";
 const ADMIN_EMP_ATTENDANCE = "employee_attendence";
 const COMMON = "common";
+const ADMIN_DAILY_TASK = "admin_daily_task";
 
 // ----------------------- HRMS --------------------------------------------
 
 export function DashboardCount(request) {
     return AxiosClientApi.post(`/${EMPLOYEE_DASHBOARD}/dashboard_check_in_out`, request, true)
+}
+
+export function DailyDrinkList(request) {
+    return AxiosClientApi.post(`/${'admin_dashboard'}/daily_drink_listing`, request, true)
+}
+
+export function DailyDrinkAdd(request) {
+    return AxiosClientApi.post(`/${'admin_dashboard'}/add_daily_drink`, request, true)
 }
 
 export function login(request) {
@@ -77,7 +86,6 @@ export function editEmployee(request) {
     return AxiosClientApi.post(`/${'admin_employee'}/edit_employee`, request, true)
 }
 
-
 // ---------------------------- Leave Module  ------------------------------------------------------- 
 
 export function listLeaves(request) {
@@ -105,27 +113,6 @@ export function listEmpLeaveBalance(request) {
 export function listAttendance(request) {
     return AxiosClientApi.post(`/${ADMIN_EMP_ATTENDANCE}/emp_attedence_lisrt`, request)
 }
-
-// {
-//     "employee_id": "69",
-//     "date": "2025-09-01",
-//     "check_in_time": "13:09",
-//     "check_out_time": "20:11",
-//     "breaks": [
-//         {
-//             "start": "18:11",
-//             "end": "19:11"
-//         },
-//         {
-//             "id": 2,
-//             "start": "17:12",
-//             "end": "18:13"
-//         }
-//     ],
-//     "lat": "0.000",
-//     "log": "0.000",
-//     "location_id": "TRACEWAVE"
-// }
 
 export function addAttendance(request) {
     return AxiosClientApi.post(`/${ADMIN_EMP_ATTENDANCE}/admin_add_attendence`, request)
@@ -192,6 +179,59 @@ export function editSaturday(request) {
     return AxiosClientApi.post(`/${COMMON}/edit_week_off`, request, true)
 }
 
+// ---------------------------- Project Module  ------------------------------------------------------- 
+
+export function listProject(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/project_listing`, request, true)
+}
+
+export function addProject(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/create_project`, request, true)
+}
+
+export function editProject(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/update_project`, request, true)
+}
+
+export function deleteProject(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/delete_project`, request, true)
+}
+
+// ---------------------------- Task Module  ------------------------------------------------------- 
+
+export function listAssignTask(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/assign_task_listing`, request, true)
+}
+
+export function addAssignTask(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/assign_task`, request, true)
+}
+
+export function editAssignTask(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/update_assign_task`, request, true)
+}
+
+export function deleteAssignTask(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/delete_assign_task`, request, true)
+}
+
+// ---------------------------- Ticket Module  ------------------------------------------------------- 
+
+export function listTicket(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/ticket_listing`, request, true)
+}
+
+export function addTicket(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/create_ticket`, request, true)
+}
+
+export function editTicket(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/update_ticket`, request, true)
+}
+
+export function deleteTicket(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/delete_ticket`, request, true)
+}
 // ---------------------------- LOAN  ------------------------------------------------------- 
 
 export function listAllLoan(request) {

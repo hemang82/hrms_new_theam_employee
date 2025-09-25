@@ -9,7 +9,7 @@ import 'datatables.net-responsive-bs5';
 import SubNavbar from '../../layout/SubNavbar';
 import { EditUser, CustomerList, editSaturday } from '../../utils/api.services';
 import { ExportToCSV, ExportToExcel, ExportToPdf, SWIT_DELETE, SWIT_DELETE_SUCCESS, TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
-import { getCustomerListThunk, getSalaryListThunk, getSaturdayListThunk, setLoader, updateSaterdayList } from '../../Store/slices/MasterSlice';
+import { getAdminEmployeeListThunk, getSalaryListThunk, getSaturdayListThunk, setLoader, updateSaterdayList } from '../../Store/slices/MasterSlice';
 import Constatnt, { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
 import { closeModel, formatDate, formatDateDyjs, getAllStatusObject, getLoanStatusObject, getSaturdayOrdinal, openModel } from '../../config/commonFunction';

@@ -9,7 +9,7 @@ import { LogoutComponent } from '../../pages/CommonPages/CommonComponent';
 import { DateFormat, EMPLOYEE_STATUS, ModelName } from '../../config/commonVariable';
 
 // /dist/images/logos/lone_logo.png
-import { getAdminEmployeeListThunk, getDailyTaskListThunk, getEmpLeaveBalanceListThunk, getHolidayListThunk, getlistAttendanceThunk, getListBankDetailsThunk, getListDepartnmentThunk, getlistLeavesThunk, getSalaryListThunk, getSaturdayListThunk, getUserDetailsThunk, setLoader, updatePageScroll, updateSlidebarToggle } from '../../Store/slices/MasterSlice';
+import { getAdminEmployeeListThunk, getAssignTaskListThunk, getDailyTaskListThunk, getEmpLeaveBalanceListThunk, getHolidayListThunk, getlistAttendanceThunk, getListBankDetailsThunk, getListDepartnmentThunk, getlistLeavesThunk, getListTicketThunk, getProjectListThunk, getSalaryListThunk, getSaturdayListThunk, getUserDetailsThunk, setLoader, updatePageScroll, updateSlidebarToggle } from '../../Store/slices/MasterSlice';
 import dayjs from 'dayjs';
 
 const Header = ({ page_name }) => {
@@ -55,7 +55,7 @@ const Header = ({ page_name }) => {
 
     //     };
     //     dispatch(getlistAttendanceThunk(request));
-    //     dispatch(getCustomerListThunk({}));
+    //     dispatch(getAdminEmployeeListThunk({}));
     //     dispatch(getListDepartnmentThunk({}))
     //     dispatch(getListBankDetailsThunk({}))
     //     dispatch(getlistLeavesThunk({}))
@@ -88,7 +88,10 @@ const Header = ({ page_name }) => {
                     dispatch(getSalaryListThunk({
                         "month": formatDateDyjs(dayjs().subtract(1, "month"), 'MM') || null,
                         "year": formatDateDyjs(dayjs().subtract(1, "month"), 'YYYY') || null,
-                    }))
+                    })),
+                    dispatch(getProjectListThunk({})),
+                    dispatch(getAssignTaskListThunk({})),
+                    dispatch(getListTicketThunk({})),
                 ]);
             } finally {
                 dispatch(setLoader(false)); // ✅ stops loader only after all are done

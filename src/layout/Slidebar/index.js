@@ -31,6 +31,7 @@ import { FcLeave } from "react-icons/fc";
 import { CiCalendarDate } from "react-icons/ci";
 import { CgList } from "react-icons/cg";
 import { LiaBirthdayCakeSolid } from "react-icons/lia";
+import { GoProjectSymlink } from 'react-icons/go';
 
 const Slidebar = () => {
 
@@ -256,6 +257,63 @@ const Slidebar = () => {
                                     </span>
                                     <span className="hide-menu">Salary</span>
                                 </Link>
+                            </li>
+
+                            <li className={`sidebar-item ${path === PATHS.LIST_PROJECT || path === PATHS.LIST_ASSIGN_TASK || path === PATHS.LIST_TICKET ? "selected" : ""}`} >
+                                <div
+                                    className={`sidebar-link has-arrow ${expanded["project"] ? "active" : ""}`}
+                                    role="button"
+                                    aria-expanded={expanded["project"] ? "true" : "false"}
+                                    onClick={() => toggleMenu("project")}
+                                >
+                                    <span>
+                                        <GoProjectSymlink style={{ fontSize: "1.2rem" }} />
+                                    </span>
+                                    <span className="hide-menu">Project</span>
+                                </div>
+
+                                <ul className={`collapse first-level ${expanded["project"] ? "show" : ""}`}
+                                    aria-expanded={expanded["project"] ? "true" : "false"}
+                                >
+
+                                    <li className="sidebar-item">
+                                        <Link
+                                            to={PATHS.LIST_PROJECT}
+                                            className={`sidebar-link ${path === PATHS.LIST_PROJECT ? "active" : ""
+                                                }`}
+                                        >
+                                            <div className="round-16 d-flex align-items-center justify-content-center">
+                                                <i className="ti ti-circle" />
+                                            </div>
+                                            <span className="hide-menu">Project List</span>
+                                        </Link>
+                                    </li>
+
+                                    <li className="sidebar-item">
+                                        <Link
+                                            to={PATHS.LIST_ASSIGN_TASK}
+                                            className={`sidebar-link ${path === PATHS.LIST_ASSIGN_TASK ? "active" : ""
+                                                }`}
+                                        >
+                                            <div className="round-16 d-flex align-items-center justify-content-center">
+                                                <i className="ti ti-circle" />
+                                            </div>
+                                            <span className="hide-menu">Assign Task</span>
+                                        </Link>
+                                    </li>
+                                    <li className="sidebar-item">
+                                        <Link
+                                            to={PATHS.LIST_TICKET}
+                                            className={`sidebar-link ${path === PATHS.LIST_TICKET ? "active" : ""
+                                                }`}
+                                        >
+                                            <div className="round-16 d-flex align-items-center justify-content-center">
+                                                <i className="ti ti-circle" />
+                                            </div>
+                                            <span className="hide-menu">Tickets</span>
+                                        </Link>
+                                    </li>
+                                </ul>
                             </li>
 
 

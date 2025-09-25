@@ -29,7 +29,7 @@ export default function AddCustomer() {
 
     const location = useLocation();
 
-    const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
+    const { adminEmployeeList: { data: adminEmployeeList }, } = useSelector((state) => state.masterslice);
 
     const [showPanCardImage, setShowPanCardImage] = useState(null);
     const [panCardFileName, setPanCardFileName] = useState('');
@@ -74,20 +74,20 @@ export default function AddCustomer() {
         const request = {
             emp_leave_company: EMPLOYEE_STATUS[0]?.key
         };
-        if (customerList?.length === 0) {
+        if (adminEmployeeList?.length === 0) {
             dispatch(getDailyTaskListThunk(request));
         }
     }, [])
 
     useEffect(() => {
-        if (attendanceData && customerList?.length > 0) {
+        if (attendanceData && adminEmployeeList?.length > 0) {
             dispatch(setLoader(true))
             const formattedBreaks = attendanceData?.breaks?.map(b => ({
                 start: b.start ? dayjs(`${b.start}`, 'HH:mm:ss') : null,
                 end: b.end ? dayjs(`${b.end}`, 'HH:mm:ss') : null
             }));
             setValue('breaks', formattedBreaks);
-            const selectedEmployee = customerList?.find(emp => emp.id == attendanceData?.emp_id) || null;
+            const selectedEmployee = adminEmployeeList?.find(emp => emp.id == attendanceData?.emp_id) || null;
             setSelectedEmployee(selectedEmployee || null)
             setValue(AstroInputTypesEnum?.EMPLOYEE_ID, attendanceData?.emp_id);
             setValue('dob1', attendanceData?.date ? dayjs(attendanceData?.date).format('DD-MM-YYYY') : null);
@@ -97,7 +97,7 @@ export default function AddCustomer() {
             dispatch(setLoader(false))
         }
         console.log('userData?.departmentuserData?.department', attendanceData?.department);
-    }, [attendanceData, customerList]);
+    }, [attendanceData, adminEmployeeList]);
 
     const onSubmitData = async (data) => {
         try {
@@ -238,13 +238,13 @@ export default function AddCustomer() {
                                                             })}
                                                             onChange={(e) => {
                                                                 const selectedId = e.target.value;
-                                                                const selectedObj = customerList.find((c) => String(c.id) === String(selectedId));
+                                                                const selectedObj = adminEmployeeList.find((c) => String(c.id) === String(selectedId));
                                                                 setSelectedEmployee(selectedObj || null);
                                                                 setValue(AstroInputTypesEnum?.EMPLOYEE_ID, selectedObj.employee_id)
                                                             }}
                                                         >
                                                             <option value="">Select employee</option>
-                                                            {selectOptionCustomer(customerList)}
+                                                            {selectOptionCustomer(adminEmployeeList)}
                                                         </select>
                                                     </div>
                                                     <label className="errorc ps-1 pt-1">

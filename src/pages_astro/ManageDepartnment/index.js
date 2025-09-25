@@ -45,7 +45,7 @@ export default function ManageDepartnment() {
     const [selectedUser, setSelectedUser] = useState()
 
     const { departnmentList: { data: departnmentList } } = useSelector((state) => state.masterslice);
-    const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
+    const { adminEmployeeList: { data: adminEmployeeList }, } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
 
     const { register, handleSubmit, setValue, clearErrors, reset, watch, trigger, control, formState: { errors } } = useForm();
@@ -124,7 +124,7 @@ export default function ManageDepartnment() {
         const request = {
             emp_leave_company: EMPLOYEE_STATUS[0]?.key,
         };
-        if (customerList?.length === 0) {
+        if (adminEmployeeList?.length === 0) {
             dispatch(getDailyTaskListThunk(request));
         }
     }, [])
