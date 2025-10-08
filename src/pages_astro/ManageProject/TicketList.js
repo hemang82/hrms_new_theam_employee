@@ -112,12 +112,13 @@ export default function AssignTaskList() {
             start = new Date(startDate);
             start.setHours(0, 0, 0, 0);
         }
+
         if (endDate) {
             end = new Date(endDate);
             end.setHours(23, 59, 59, 999);
         }
 
-        const filtered = taskList?.filter((task) => {
+        const filtered = taskList?.length > 0 && taskList?.filter((task) => {
             const currentDate = new Date(task?.created_at);
 
             // ✅ Date filter
@@ -141,7 +142,7 @@ export default function AssignTaskList() {
             return dateCondition && priorityCondition && projectCondition;
         });
 
-        const sorted = filtered?.sort(
+        const sorted = filtered?.length > 0 && filtered?.sort(
             (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
 
@@ -223,8 +224,8 @@ export default function AssignTaskList() {
                 dispatch(setLoader(false))
                 TOAST_SUCCESS(response?.message);
 
-                let updatedList = cloneDeep(updatedTicketList); // shallow copy (optional, if immutability needed)
-                let target = updatedList.find(item => item.emp_id == selectedEmployee?.id);
+                let updatedList = cloneDeep(updatedTicketList?.length > 0 ? updatedTicketList : []); // shallow copy (optional, if immutability needed)
+                let target = updatedList?.find(item => item.emp_id == selectedEmployee?.id);
                 if (target) {
                     target.checkInTimes = data?.checkIn ? [convertToUTC(sendRequest?.date, sendRequest?.check_in_time, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT)] : [];
                     target.checkOutTimes = data?.checkOut ? [convertToUTC(sendRequest?.date, sendRequest?.check_out_time, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT)] : [];

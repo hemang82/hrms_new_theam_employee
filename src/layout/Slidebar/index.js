@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { GiKnightBanner } from "react-icons/gi";
 import { FaRegCalendarAlt, FaRegNewspaper, FaRegUser, FaStackExchange, FaUsers } from "react-icons/fa";
-import { TbBuildingBank, TbCoinRupee, TbDashboardFilled, TbMoneybag } from "react-icons/tb";
+import { TbBuildingBank, TbCalendarUser, TbCoinRupee, TbDashboardFilled, TbMoneybag } from "react-icons/tb";
 import { GrBlog, GrMoney, GrSettingsOption } from "react-icons/gr";
 import { RiCoupon3Line } from "react-icons/ri";
 import { PiFlagBannerFoldThin } from "react-icons/pi";
@@ -69,11 +69,22 @@ const Slidebar = () => {
     // const [slidebarToggle, setIs_toggle] = useState(true);
     const [toggletype, setTogalType] = useState("full");
 
+    // const toggleMenu = (menuName) => {
+    //     setExpanded((prev) => ({
+    //         ...prev,
+    //         [menuName]: !prev[menuName],
+    //     }));
+    // };
+
     const toggleMenu = (menuName) => {
-        setExpanded((prev) => ({
-            ...prev,
-            [menuName]: !prev[menuName],
-        }));
+        setExpanded((prev) => {
+            const newState = Object.keys(prev).reduce((acc, key) => {
+                acc[key] = false; // close all menus
+                return acc;
+            }, {});
+            newState[menuName] = !prev[menuName]; // toggle clicked menu
+            return newState;
+        });
     };
 
     // useEffect(() => {
@@ -188,7 +199,9 @@ const Slidebar = () => {
                     <nav className="sidebar-nav scroll-sidebar" data-simplebar>
                         <ul id="sidebarnav">
 
-                            <li className={`sidebar-item ${path === "/dashboard" || path === "/" ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === "/dashboard" || path === "/" ? "selected" : ""}`}
+                                onClick={() => toggleMenu('/dashboard')}
+                            >
                                 <Link to={'/dashboard'} className={`sidebar-link ${path === "/dashboard" || path === "/" ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <TfiDashboard style={{ fontSize: '1.2rem' }} />
@@ -197,7 +210,9 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.ATTENDANCE_LIST ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === PATHS.ATTENDANCE_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.ATTENDANCE_LIST)}
+                            >
                                 <Link to={PATHS.ATTENDANCE_LIST} className={`sidebar-link ${path === PATHS.ATTENDANCE_LIST ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <LuCalendarSync style={{ fontSize: '1.2rem' }} />
@@ -206,58 +221,6 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.LIST_DAILY_WORK_UPDATE ? "selected" : ""}`}>
-                                <Link to={PATHS.LIST_DAILY_WORK_UPDATE} className={`sidebar-link ${path === PATHS.LIST_DAILY_WORK_UPDATE ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <BsPersonWorkspace style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Daily Work Update</span>
-                                </Link>
-                            </li>
-
-                            <li className={`sidebar-item ${path === PATHS.LEAVE_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS.LEAVE_LIST} className={`sidebar-link ${path === PATHS.LEAVE_LIST ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <MdOutlineCoPresent style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Leave</span>
-                                </Link>
-                            </li>
-                            <li className={`sidebar-item ${path === PATHS.SATERDAY_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS.SATERDAY_LIST} className={`sidebar-link ${path === PATHS.SATERDAY_LIST ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <MdOutlineDateRange style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Saturday</span>
-                                </Link>
-                            </li>
-
-                            <li className={`sidebar-item ${path === PATHS?.HOLIDAYS_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS?.HOLIDAYS_LIST} className={`sidebar-link ${path === PATHS?.HOLIDAYS_LIST ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <IoCalendarOutline style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Holidays</span>
-                                </Link>
-                            </li>
-
-                            <li className={`sidebar-item ${path === PATHS?.LIST_BIRTHDAY ? "selected" : ""}`}>
-                                <Link to={PATHS?.LIST_BIRTHDAY} className={`sidebar-link ${path === PATHS?.LIST_BIRTHDAY ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <LiaBirthdayCakeSolid style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Birthday</span>
-                                </Link>
-                            </li>
-
-                            <li className={`sidebar-item ${path === PATHS.SALARY_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS.SALARY_LIST} className={`sidebar-link ${path === PATHS.SALARY_LIST ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <GrMoney style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Salary</span>
-                                </Link>
-                            </li>
 
                             <li className={`sidebar-item ${path === PATHS.LIST_PROJECT || path === PATHS.LIST_ASSIGN_TASK || path === PATHS.LIST_TICKET ? "selected" : ""}`} >
                                 <div
@@ -315,6 +278,85 @@ const Slidebar = () => {
                                     </li>
                                 </ul>
                             </li>
+
+                            <li className={`sidebar-item ${path === PATHS.LIST_DAILY_WORK_UPDATE ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.LIST_DAILY_WORK_UPDATE)}
+                            >
+                                <Link to={PATHS.LIST_DAILY_WORK_UPDATE} className={`sidebar-link ${path === PATHS.LIST_DAILY_WORK_UPDATE ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <BsPersonWorkspace style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Daily Work Update</span>
+                                </Link>
+                            </li>
+
+                            <li className={`sidebar-item ${path === PATHS.LEAVE_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.LEAVE_LIST)}
+                            >
+                                <Link to={PATHS.LEAVE_LIST} className={`sidebar-link ${path === PATHS.LEAVE_LIST ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <MdOutlineCoPresent style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Leave</span>
+                                </Link>
+                            </li>
+
+                            <li className={`sidebar-item ${path === PATHS.LEAVE_REQUEST_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.LEAVE_REQUEST_LIST)}
+                            >
+                                <Link to={PATHS.LEAVE_REQUEST_LIST} className={`sidebar-link ${path === PATHS.LEAVE_REQUEST_LIST ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <TbCalendarUser style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Leave Request</span>
+                                </Link>
+                            </li>
+
+                            <li className={`sidebar-item ${path === PATHS.SATERDAY_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.SATERDAY_LIST)}
+                            >
+                                <Link to={PATHS.SATERDAY_LIST} className={`sidebar-link ${path === PATHS.SATERDAY_LIST ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <MdOutlineDateRange style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Saturday</span>
+                                </Link>
+                            </li>
+
+                            <li className={`sidebar-item ${path === PATHS?.HOLIDAYS_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.HOLIDAYS_LIST)}
+                            >
+                                <Link to={PATHS?.HOLIDAYS_LIST} className={`sidebar-link ${path === PATHS?.HOLIDAYS_LIST ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <IoCalendarOutline style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Holidays</span>
+                                </Link>
+                            </li>
+
+                            <li className={`sidebar-item ${path === PATHS?.LIST_BIRTHDAY ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.LIST_BIRTHDAY)}
+                            >
+                                <Link to={PATHS?.LIST_BIRTHDAY} className={`sidebar-link ${path === PATHS?.LIST_BIRTHDAY ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <LiaBirthdayCakeSolid style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Birthday</span>
+                                </Link>
+                            </li>
+
+                            <li className={`sidebar-item ${path === PATHS.SALARY_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.SALARY_LIST)}
+                            >
+                                <Link to={PATHS.SALARY_LIST} className={`sidebar-link ${path === PATHS.SALARY_LIST ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <GrMoney style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Salary</span>
+                                </Link>
+                            </li>
+
+
 
 
                             <li className={`sidebar-item  `} onClick={() => { openModel(dispatch, ModelName.LOGOUT_MODEL) }} style={{ cursor: 'pointer' }}>

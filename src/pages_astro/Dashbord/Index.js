@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Header from '../../layout/Header'
 import * as API from '../../utils/api.services';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,7 +23,7 @@ import { IoAddCircleOutline } from 'react-icons/io5';
 import { PiBowlSteam } from 'react-icons/pi';
 import { VscCoffee } from "react-icons/vsc";
 import { FaCoffee } from 'react-icons/fa';
-import { TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
+import { formatDate, TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
 
 const Index = () => {
 
@@ -31,11 +31,33 @@ const Index = () => {
 
     const { listAllLoan: { data: loanList }, } = useSelector((state) => state.masterslice);
     const { userDetails: { data: userDetails }, } = useSelector((state) => state.masterslice);
+    const { birthdayAndAnnivarsary: { data: birthdayList }, } = useSelector((state) => state.masterslice);
+    // const { dailyTeaList: { data: drinkList }, } = useSelector((state) => state.masterslice);
 
 
     const [dashboard, setDashboard] = useState({});
     const [drinkList, setDrinkList] = useState([]);
+    // const [birthdayList, setBirthdayList] = useState([]);
+
     const [isLoad, setIsLoad] = useState(false);
+
+    const [options, setOptions] = useState({
+        loop: true,
+        margin: 10,
+        autoplay: true,
+        autoplayTimeout: 1500,  // ⏱️ wait 2.5s before next slide
+        autoplaySpeed: 1000,    // smooth transition speed
+        autoplayHoverPause: true,
+        dots: true,             // show bottom dots
+        nav: false,
+        smartSpeed: 1000,
+        responsive: {
+            0: { items: 1 },
+            576: { items: 1 },
+            992: { items: 2 },
+        },
+    });
+
 
     const fetchDashboardData = async () => {
         try {
@@ -57,7 +79,8 @@ const Index = () => {
     const fetchTeaData = async () => {
         try {
             // dispatch(setLoader(true));
-            const res2 = await API.DailyDrinkList({});
+
+            const res2 = await API.DailyDrinkList({ action: 'self' });
             if (res2?.code == Codes.SUCCESS) {
                 // Add a new object to the list
                 const totalData = {
@@ -68,17 +91,51 @@ const Index = () => {
                     "evening_tea": res2?.data?.total?.total_evening_tea,
                     "evening_coffee": res2?.data?.total?.total_evening_coffee
                 };
-
                 // Spread the fetched data and append the new "Total" object at the end
                 setDrinkList([
                     ...res2?.data?.list,
                     totalData
                 ]);
-
             } else {
                 setDrinkList([]); // If the API call fails, set an empty list
             }
 
+            // const res1 = await API.birthdayAndAnnivarsary();
+            // if (res1?.code == Codes.SUCCESS) {
+            //     const data = res1.data;
+            //     setBirthdayList(data);
+            //     if (data.length > 1) {
+            //         setOptions({
+            //             loop: true,
+            //             margin: 10,
+            //             autoplay: true,
+            //             autoplayTimeout: 1500,
+            //             autoplayHoverPause: true,
+            //             dots: true,
+            //             nav: false,
+            //             smartSpeed: 800,
+            //             responsive: {
+            //                 0: { items: 1 },
+            //                 576: { items: 1 },
+            //                 992: { items: 1 },
+            //             },
+            //         });
+            //     } else {
+            //         setOptions({
+            //             loop: false,
+            //             margin: 10,
+            //             autoplay: false,
+            //             dots: false,
+            //             nav: false,
+            //             responsive: {
+            //                 0: { items: 1 },
+            //                 576: { items: 1 },
+            //             },
+            //         });
+            //     }
+            // } else {
+            //     setBirthdayList([]);
+            // }
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
         } finally {
@@ -178,10 +235,101 @@ const Index = () => {
         return drinkList.find(item => item.employee_id === employeeId);
     };
 
+    const canvasRef = useRef(null);
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const context = canvas.getContext("2d");
+        let animationFrameId;
+        const COLORS = [
+            [255, 99, 132],
+            [54, 162, 235],
+            [255, 206, 86],
+            [75, 192, 192],
+            [153, 102, 255],
+            [255, 159, 64],
+        ];
+        const PI_2 = 2 * Math.PI;
+        const NUM_CONFETTI = 80;
+        let confetti = [];
+        let w = 0;
+        let h = 0;
+        let xpos = 0.5;
+
+        const resizeCanvas = () => {
+            const rect = canvas.parentNode.getBoundingClientRect();
+            w = canvas.width = rect.width;
+            h = canvas.height = rect.height;
+        };
+
+        class Confetti {
+            constructor() {
+                this.style = COLORS[~~(Math.random() * COLORS.length)];
+                this.rgb = `rgba(${this.style[0]},${this.style[1]},${this.style[2]}`;
+                this.r = ~~(Math.random() * 6) + 2;
+                this.replace();
+            }
+            replace() {
+                this.opacity = 0;
+                this.dop = 0.01 * (Math.random() * 3 + 1);
+                this.x = Math.random() * w;
+                this.y = Math.random() * h - h;
+                this.xmax = w - this.r;
+                this.ymax = h - this.r;
+                this.vx = (Math.random() - 0.5) * 0.8;  // reduce horizontal speed too
+                this.vy = 0.2 * this.r + Math.random() * 0.2; // much slower fall
+            }
+            draw() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.opacity += this.dop;
+                if (this.opacity > 1) {
+                    this.opacity = 1;
+                    this.dop *= -1;
+                }
+                if (this.opacity < 0 || this.y > this.ymax) this.replace();
+                if (this.x < 0 || this.x > this.xmax)
+                    this.x = (this.x + this.xmax) % this.xmax;
+                context.beginPath();
+                context.arc(this.x, this.y, this.r, 0, PI_2, false);
+                context.fillStyle = `${this.rgb},${this.opacity})`;
+                context.fill();
+            }
+        }
+
+        const initConfetti = () => {
+            confetti = Array.from({ length: NUM_CONFETTI }, () => new Confetti());
+        };
+
+        const animate = () => {
+            context.clearRect(0, 0, w, h);
+            confetti.forEach((c) => c.draw());
+            animationFrameId = requestAnimationFrame(animate);
+        };
+
+        resizeCanvas();
+        initConfetti();
+        animate();
+
+        window.addEventListener("resize", resizeCanvas);
+
+        return () => {
+            window.removeEventListener("resize", resizeCanvas);
+            cancelAnimationFrame(animationFrameId);
+        };
+    }, [birthdayList]);
+
+    const data = "";
+    const type = "";
+
+    console.log('birthdayList', birthdayList);
+
     return (
         <>
             <div className="container-fluid mw-100">
+
                 <SubNavbar />
+
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mt-3 ">
                     {dashboardCards?.map((card, index) => (
                         <div className="col" key={index}>
@@ -204,12 +352,87 @@ const Index = () => {
                     ))}
                 </div>
 
-                <div className="row mt-3 mb-3">
-                    <div className="col-12 col-sm-12 col-lg-12 col-md-12">
-                        <div className="card card-body rounded-3">
+                <div className="row mt-3 mb-3 p-3">
+                    {
+                        birthdayList?.length > 0 &&
+                        <div className="col-12 col-sm-6 col-lg-6 col-md-12 border border-1 rounded-3 shadow-sm mb-3">
+                            <OwlCarousel
+                                key={birthdayList?.length} // ✅ re-renders when data count changes
+                                className="owl-theme"
+                                {...options}
+                            >
+                                {birthdayList?.map((data, index) => (
+                                    <div key={index} className="col-12">
+                                        <div className="card position-relative rounded-4 mx-auto my-4 shadow-md border-1"
+                                            style={{
+                                                maxWidth: "22rem",
+                                                background: "rgba(255, 255, 255, 0.6)",
+                                                backdropFilter: "blur(10px)",
+                                                overflow: "hidden",
+                                            }}
+                                        >
+
+                                            <canvas className="position-absolute top-0 start-0 w-100 h-100" ref={canvasRef} style={{ zIndex: 0 }} />
+
+                                            <div className="d-flex justify-content-center mt-4 position-relative" style={{ zIndex: 2 }} >
+                                                <div className="bg-white rounded-circle p-1 ">
+                                                    <img
+                                                        src={"/dist/images/logos/hrms_icon.png"}
+                                                        alt="profile"
+                                                        className="rounded-circle border border-3 border-white shadow"
+                                                        style={{ width: "80px", height: "80px", objectFit: "cover" }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="card-body text-center position-relative" style={{ zIndex: 2 }}>
+                                                <h5
+                                                    className="fw-semibold fs-5 text-custom-theam"
+                                                    style={{
+                                                        // background: "linear-gradient(90deg, #ff4b2b, #ff416c, #ff6a00)",
+                                                        // WebkitBackgroundClip: "text",
+                                                        // WebkitTextFillColor: "transparent",
+                                                    }}
+                                                >
+                                                    {data?.name}
+                                                </h5>
+
+                                                <p className="text-muted small  fw-semibold">{data?.date}</p>
+
+                                                <p className="fw-semibold fs-6 text-custom-theam text-nowrap ">
+                                                    {data?.type == "Anniversary"
+                                                        ? "🌟Happy Work Anniversary!🌟"
+                                                        : "🎉 Happy Birthday! 🎂"}
+                                                </p>
+
+                                                <p className="text-secondary mt-2 lh-base">
+                                                    {data?.type == "Anniversary"
+                                                        ? "Thank you for your amazing contributions! Wishing you continued success and growth with us."
+                                                        : "🎉 Wishing you joy, success, and happiness on your special day.💐"}
+                                                </p>
+
+                                                <div className="text-center mb-2 position-relative" style={{ zIndex: 2 }}>
+                                                    {data?.type === "Anniversary" ? (
+                                                        <span className="fs-4 floating">🎊🥳🏆</span>
+                                                    ) : (
+                                                        <span className="fs-4 floating">🎈🎉🎂🎊</span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                ))}
+                            </OwlCarousel>
+                        </div>
+                    }
+
+                    <div className={`col-12 col-sm-6 ${birthdayList?.length > 0 ? 'col-lg-6' : 'col-lg-12'} col-md-12 `}>
+                        <div className="card card-body rounded-3 mb-3 border-1 rounded-3 shadow-sm">
                             <div className="">
                                 <div className="py-2 border-bottom d-flex align-items-center justify-content-between mb-4 gap-2 flex-wrap">
-                                    <div className="">
+
+                                    {/* <div className="">
                                         <h5 className="text-secondary mb-0 fw-semibold fs-6">
                                             {timeOfDay === 'morning' ?
                                                 `Hey ${userDetails?.name || '-'}, Good Morning!` :
@@ -219,9 +442,9 @@ const Index = () => {
                                                         `Hey ${userDetails?.name || '-'}, Good Evening!` :
                                                         'Good Day, Enjoy your Drink!'}
                                         </h5>
-                                    </div>
+                                    </div> */}
 
-                                    <div className=" gap-2 d-flex flex-wrap align-items-center justify-content-end mt-3 mt-md-0">
+                                    <div className="gap-2 d-flex flex-wrap align-items-center justify-content-end mt-3 mt-md-0 mb-3 ms-4">
                                         <Link
                                             id="btn-add-tea"
                                             className="btn btn-info d-flex align-items-center justify-content-center w-100 w-md-auto text-truncate mb-2 mb-md-0 dashboard_btn"
@@ -296,7 +519,6 @@ const Index = () => {
                                         </Link>
                                     </div>
 
-
                                 </div>
 
                                 <div className="table-responsive" style={{ overflowX: 'auto' }}>
@@ -314,6 +536,10 @@ const Index = () => {
                                             style={{ minWidth: '8rem', textTransform: 'capitalize', overflow: 'hidden', textOverflow: 'ellipsis' }}
                                             body={(rowData) => <span className="me-2">{rowData.employee_name || '-'}</span>}
                                         />
+
+                                        <Column field="date" header="Date" style={{ minWidth: '10rem' }} body={(rowData) => (
+                                            <span className='me-2'>{momentDateFormat(rowData?.date, DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT) || '-'} </span>
+                                        )} />
 
                                         <Column
                                             field="morning_tea"
@@ -344,9 +570,11 @@ const Index = () => {
                                         />
                                     </DataTable>
                                 </div>
+
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 {/* <div className="row">

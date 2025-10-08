@@ -9,7 +9,7 @@ import { LogoutComponent } from '../../pages/CommonPages/CommonComponent';
 import { DateFormat, EMPLOYEE_STATUS, ModelName } from '../../config/commonVariable';
 
 // /dist/images/logos/lone_logo.png
-import { getAdminEmployeeListThunk, getAssignTaskListThunk, getDailyTaskListThunk, getEmpLeaveBalanceListThunk, getHolidayListThunk, getlistAttendanceThunk, getListBankDetailsThunk, getListDepartnmentThunk, getlistLeavesThunk, getListTicketThunk, getProjectListThunk, getSalaryListThunk, getSaturdayListThunk, getUserDetailsThunk, setLoader, updatePageScroll, updateSlidebarToggle } from '../../Store/slices/MasterSlice';
+import { getAdminEmployeeListThunk, getAssignTaskListThunk, getBirthdayAndAnnivarsaryListThunk, getDailyTaskListThunk, getDailyTeaThunk, getEmpLeaveBalanceListThunk, getHolidayListThunk, getlistAttendanceThunk, getListBankDetailsThunk, getListDepartnmentThunk, getlistLeavesRequestThunk, getlistLeavesThunk, getListTicketThunk, getProjectListThunk, getSalaryListThunk, getSaturdayListThunk, getUserDetailsThunk, setLoader, updatePageScroll, updateSlidebarToggle } from '../../Store/slices/MasterSlice';
 import dayjs from 'dayjs';
 
 const Header = ({ page_name }) => {
@@ -78,6 +78,8 @@ const Header = ({ page_name }) => {
                         end_date: dayjsDateFormat(dayjs(), DateFormat?.DATE_DASH_TIME_FORMAT) || null
                     })),
                     dispatch(getlistLeavesThunk(request)),
+                    dispatch(getlistLeavesRequestThunk(request)),
+
                     dispatch(getSaturdayListThunk({ year: new Date().getFullYear(), month: new Date().getMonth() + 1 })),
                     // dispatch(getHolidayListThunk()),
                     dispatch(getHolidayListThunk({ year: formatDateDyjs(dayjs(), DateFormat?.DATE_WEEK_NAME_FORMAT_YEAR) })),
@@ -85,10 +87,18 @@ const Header = ({ page_name }) => {
                         birthday: true,
                         emp_leave_company: EMPLOYEE_STATUS[0]?.key
                     })),
+
+                    dispatch(getBirthdayAndAnnivarsaryListThunk({
+                        // birthday: true,
+                        emp_leave_company: EMPLOYEE_STATUS[0]?.key
+                    })),
+
+                    dispatch(getDailyTeaThunk({ action: 'self' })),
                     dispatch(getSalaryListThunk({
                         "month": formatDateDyjs(dayjs().subtract(1, "month"), 'MM') || null,
                         "year": formatDateDyjs(dayjs().subtract(1, "month"), 'YYYY') || null,
                     })),
+                    
                     dispatch(getProjectListThunk({})),
                     dispatch(getAssignTaskListThunk({})),
                     dispatch(getListTicketThunk({})),

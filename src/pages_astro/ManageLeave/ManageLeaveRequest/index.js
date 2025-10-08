@@ -1,39 +1,38 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import Header from '../../layout/Header';
-import Slidebar from '../../layout/Slidebar';
+import Header from '../../../layout/Header';
+import Slidebar from '../../../layout/Slidebar';
 import $ from 'jquery';
 import 'datatables.net-bs5';
 import 'datatables.net-responsive-bs5';
-import SubNavbar from '../../layout/SubNavbar';
-import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, approvedRejectLeaves } from '../../utils/api.services';
-import { ExportToCSV, ExportToExcel, ExportToPdf, SWIT_DELETE, SWIT_DELETE_SUCCESS, SWIT_FAILED, TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
-import profile_image from '../../assets/Images/default.jpg'
-import ReactDatatable from '../../config/ReactDatatable';
-import { Helmet } from 'react-helmet';
+import SubNavbar from '../../../layout/SubNavbar';
+import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, approvedRejectLeaves, addLeavesRequest, deleteLeavesRequest } from '../../../utils/api.services';
+import { ExportToCSV, ExportToExcel, ExportToPdf, SWIT_DELETE, SWIT_DELETE_SUCCESS, SWIT_FAILED, TOAST_ERROR, TOAST_SUCCESS } from '../../../config/common';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import { getDailyTaskListThunk, getAllLoanListThunk, setLoader, updateLoanList, getProcessingFeeListThunk, getSalaryListThunk, getlistLeavesThunk, updateLeaveList, getUserDetailsThunk } from '../../Store/slices/MasterSlice';
-import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
-import useDebounce from '../hooks/useDebounce';
-import { closeModel, disableFutureDates, formatDate, formatDateDyjs, formatIndianPrice, getFileNameFromUrl, getLoanStatusObject, openModel, selectOption, selectOptionCustomer, truncateWords } from '../../config/commonFunction';
-import Model from '../../component/Model';
-import { DeleteComponent } from '../CommonPages/CommonComponent';
-import Pagination from '../../component/Pagination';
-import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS } from '../../config/commonVariable';
+import { getDailyTaskListThunk, getAllLoanListThunk, setLoader, updateLoanList, getProcessingFeeListThunk, getSalaryListThunk, getlistLeavesThunk, updateLeaveList, getUserDetailsThunk, getlistLeavesRequestThunk, updateLeaveRequestList } from '../../../Store/slices/MasterSlice';
+import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../../config/constant';
+import useDebounce from '../../hooks/useDebounce';
+import { closeModel, disableFutureDates, formatDate, formatDateDyjs, formatIndianPrice, getFileNameFromUrl, getLoanStatusObject, momentNormalDateFormat, openModel, QuillContentRowWise, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../../config/commonFunction';
+import Model from '../../../component/Model';
+import { DeleteComponent } from '../../CommonPages/CommonComponent';
+import Pagination from '../../../component/Pagination';
+import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS } from '../../../config/commonVariable';
 import { RiDeleteBinLine, RiUserReceivedLine } from 'react-icons/ri';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import 'dayjs/locale/en'; // or your locale
 import { IoAddCircleOutline } from 'react-icons/io5';
-import { uploadImageOnAWS } from '../../utils/aws.service';
-import { PATHS } from '../../Router/PATHS';
+import { uploadImageOnAWS } from '../../../utils/aws.service';
+import { PATHS } from '../../../Router/PATHS';
 import { BsQuestionOctagon } from 'react-icons/bs';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import ReactQuill from 'react-quill';
+import "react-quill/dist/quill.snow.css";
 
 export default function ManageCoustomer() {
 
@@ -47,7 +46,7 @@ export default function ManageCoustomer() {
     const [checked, setChecked] = useState('');
     const [is_load, setis_load] = useState(false);
 
-    const { leaveList: { data: leaves } } = useSelector((state) => state.masterslice);
+    const { leaveRequestList: { data: leaves } } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
     const { userDetails: { data: userDetails }, } = useSelector((state) => state.masterslice);
 
@@ -67,9 +66,9 @@ export default function ManageCoustomer() {
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const debounce = useDebounce(globalFilterValue, SEARCH_DELAY);
     const [filters, setFilters] = useState({ global: { value: '' } });
-    const [addLeaveModal, setAddLeave] = useState(false);
+    const [addLeaveRequestModal, setAddRequestLeave] = useState(false);
     const [actionModal, setAction] = useState(false);
-
+    const [isLeaveRequestEdit, setIsLeaveRequestEdit] = useState(false)
     const [viewModel, setViewModel] = useState(false);
 
     const [selectedOption, setSelectedOption] = useState(ALLSTATUS_LIST[0]);
@@ -85,15 +84,14 @@ export default function ManageCoustomer() {
     const [selectedEmployee, setSelectedEmployee] = useState(null);
 
     useEffect(() => {
-        // const request = {
-        //     emp_leave_company: EMPLOYEE_STATUS[0]?.key,
-        // };
-        // if (customerList?.length === 0) {
-        //     dispatch(getDailyTaskListThunk(request));
+        const request = {
+            emp_leave_company: EMPLOYEE_STATUS[0]?.key,
+        };
+        // if (leaves?.length == 0) {
+        //     dispatch(getlistLeavesRequestThunk(request));
         // }
         setSelectedOption({})
-        setSelectedEmployee(userDetails || null);
-    }, [userDetails, is_load])
+    }, [])
 
     useEffect(() => {
         let request = {
@@ -158,7 +156,6 @@ export default function ManageCoustomer() {
                 });
                 dispatch(getUserDetailsThunk());
                 dispatch(updateLeaveList(updatedList));
-                dispatch(getUserDetailsThunk());
                 setSelecteLeave({});
                 closeActionModelFunc();
             } else {
@@ -178,30 +175,47 @@ export default function ManageCoustomer() {
         }
     };
 
-
-    const handleDelete = (is_true) => {
+    const handleDelete = async (is_true) => {
         if (is_true) {
-            // setis_load(true)
-            dispatch(setLoader(true));
-            let submitData = {
-                loan_id: selectedLeave?.id,
-                is_deleted: true,
-            }
-            updateLoanDetails(submitData).then((response) => {
-                if (response.status_code === Codes?.SUCCESS) {
-                    setis_load(false)
-                    const updatedList = leaves?.filter((item) => item.id !== selectedLeave?.id)
-                    dispatch(updateLoanList({
-                        ...leaves,
-                        loan_applications: updatedList
-                    }))
-                    closeModel(dispatch)
-                    dispatch(setLoader(false))
+            try {
+                dispatch(setLoader(true));
+
+                const submitData = {
+                    leave_id: selectedLeave?.id,
+                };
+
+                const response = await deleteLeavesRequest(submitData);
+
+                if (response.code === Codes?.SUCCESS) {
+                    const updatedList = leaves?.filter(
+                        (item) => item.id !== selectedLeave?.id
+                    );
+
+                    dispatch(
+                        updateLeaveRequestList({
+                            ...leaves,
+                            loan_applications: updatedList,
+                        })
+                    );
+
                     TOAST_SUCCESS(response?.message);
+
+                } else {
+                    TOAST_ERROR(response?.message || "Something went wrong!");
                 }
-            });
+            } catch (error) {
+                console.error("Delete leave error:", error);
+                TOAST_ERROR("Failed to delete leave. Please try again.");
+                closeModel(dispatch);
+                setAction(false)
+            } finally {
+                closeModel(dispatch);
+                setAction(false)
+                dispatch(setLoader(false));
+            }
         }
     };
+
 
     const onGlobalFilterChange = (e) => {
         const value = e.target.value;
@@ -222,17 +236,19 @@ export default function ManageCoustomer() {
         dispatch(setLoader(true))
 
         let sendRequest = {
-            balance: data[AstroInputTypesEnum?.LEAVE_BALANCE],
-            employee_id: data[AstroInputTypesEnum?.EMPLOYEE],
-            leave_type: data[AstroInputTypesEnum?.LEAVE_TYPE],
+            date: momentNormalDateFormat(data[AstroInputTypesEnum.DATE], DateFormat?.DATE_FORMAT, DateFormat?.DATE_DASH_TIME_FORMAT),
+            // leave_type: data[AstroInputTypesEnum?.LEAVE_TYPE],
+            reason: data[AstroInputTypesEnum.REASON],
         };
-        addLeaves(sendRequest).then((response) => {
+        console.log('emp_leave_company: EMPLOYEE_STATUS[0]?.key,', sendRequest);
+
+        addLeavesRequest(sendRequest).then((response) => {
             if (response?.code == Codes.SUCCESS) {
-                reset()
                 TOAST_SUCCESS(response?.message);
-                closeLeaveModelFunc()
+                dispatch(getlistLeavesRequestThunk({ emp_leave_company: EMPLOYEE_STATUS[0]?.key }))
+                closeLeaveRequestModelFunc()
                 dispatch(setLoader(false))
-                dispatch(getlistLeavesThunk({}))
+                reset()
             } else {
                 dispatch(setLoader(false))
                 TOAST_ERROR(response?.message)
@@ -253,12 +269,12 @@ export default function ManageCoustomer() {
         setSelecteLeave({});
     }
 
-    const openLeaveModelFunc = () => {
-        setAddLeave(true)
+    const openLeaveRequestModelFunc = () => {
+        setAddRequestLeave(true)
     }
 
-    const closeLeaveModelFunc = () => {
-        setAddLeave(false)
+    const closeLeaveRequestModelFunc = () => {
+        setAddRequestLeave(false)
     }
 
     const openViewModelFunc = (data) => {
@@ -322,7 +338,7 @@ export default function ManageCoustomer() {
     return (
         <>
             <div className="container-fluid mw-100">
-                <SubNavbar title={"Leave List"} header={'Leave List'} />
+                <SubNavbar title={"Leave Request List"} header={'Leave Request List'} />
 
                 <div className="widget-content searchable-container list">
                     {/* --------------------- start Contact ---------------- */}
@@ -360,16 +376,16 @@ export default function ManageCoustomer() {
                     }
 
                     <div className="card card-body mb-2 p-3">
-                        <div className="row g-3">
+                        <div className="row g-2">
 
                             {/* Search Bar */}
                             <div className="col-12 col-md-6 col-lg-4">
-                                <div className="position-relative mt-4 w-75">
+                                <div className="position-relative mt-2 w-75">
                                     <input
                                         type="text"
                                         className="form-control ps-5  "
                                         id="input-search"
-                                        placeholder="Search leave ..."
+                                        placeholder="Search leave request ..."
                                         value={globalFilterValue}
                                         onChange={onGlobalFilterChange}
                                     />
@@ -377,10 +393,9 @@ export default function ManageCoustomer() {
                                 </div>
                             </div>
 
-
                             {/* Start Date */}
                             <div className="col-12 col-md-6 col-lg-2">
-                                <label className="d-block mb-1 fw-semibold">Start Date</label>
+                                {/* <label className="d-block mb-1 fw-semibold">Start Date</label>
                                 <DatePicker
                                     className="custom-datepicker w-100 p-2"
                                     format={DateFormat?.DATE_FORMAT}
@@ -389,12 +404,12 @@ export default function ManageCoustomer() {
                                         setStartDate(date);
                                         setEndDate(null);
                                     }}
-                                />
+                                /> */}
                             </div>
 
                             {/* End Date */}
                             <div className="col-12 col-md-6 col-lg-2">
-                                <label className="d-block mb-1 fw-semibold">End Date</label>
+                                {/* <label className="d-block mb-1 fw-semibold">End Date</label>
                                 <DatePicker
                                     className="custom-datepicker w-100 p-2"
                                     format={DateFormat?.DATE_FORMAT}
@@ -405,11 +420,11 @@ export default function ManageCoustomer() {
                                     }}
                                     disabled={!startDate}
                                     disabledDate={disabledEndDate}
-                                />
+                                /> */}
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-2">
-                                <label className="d-block mb-1 fw-semibold">Leave Status</label>
+                                {/* <label className="d-block mb-1 fw-semibold">Leave Status</label>
                                 <div className="btn-group w-100">
                                     <button
                                         type="button"
@@ -433,21 +448,22 @@ export default function ManageCoustomer() {
                                             </li>
                                         ))}
                                     </ul>
-                                </div>
+                                </div> */}
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-2 mb-3 mb-md-0">
-                                <div className="d-flex justify-content-end mt-4">
+                                <div className="d-flex justify-content-end mt-2">
                                     <Link
-                                        to={PATHS?.ADD_LEAVE}
+                                        // to={PATHS?.ADD_LEAVE}
                                         id="btn-add-contact"
                                         className="btn btn-info d-flex align-items-center justify-content-center w-100 w-md-auto"
                                         style={{ height: '40px' }}
+                                        onClick={() => { openLeaveRequestModelFunc() }}
                                     >
                                         <span className="me-1">
                                             <IoAddCircleOutline style={{ fontSize: '1.2rem' }} />
                                         </span>
-                                        <span className="fw-semibold">Add Leave</span>
+                                        <span className="fw-semibold text-nowrap">Add Leave Request</span>
                                     </Link>
                                 </div>
                             </div>
@@ -488,21 +504,13 @@ export default function ManageCoustomer() {
                                     <span className='me-2'>{truncateWords(rowData.name) || '-'} </span>
                                 )} />
 
-                                <Column field="start_date" header="From" style={{ minWidth: '8rem' }} body={(rowData) => (
-                                    <span className='me-2'>{formatDate(rowData.start_date, DateFormat?.DATE_FORMAT) || '-'} </span>
+                                <Column field="date" header="Date" style={{ minWidth: '8rem' }} body={(rowData) => (
+                                    <span className='me-2'>{formatDate(rowData.date, DateFormat?.DATE_FORMAT) || '-'} </span>
                                 )} />
 
-                                <Column field="end_date" header="To" style={{ minWidth: '8em' }} body={(rowData) => (
-                                    <span className='me-2'>{formatDate(rowData.end_date, DateFormat?.DATE_FORMAT) || '-'} </span>
-                                )} />
-
-                                <Column field="days" header="Days" style={{ minWidth: '6rem' }} body={(rowData) => (
-                                    <span className='me-2'>{rowData?.days || '-'} </span>
-                                )} />
-
-                                <Column field="leave_type" header="Type" style={{ minWidth: '6rem' }} body={(rowData) => (
-                                    <span className='me-2'>{rowData?.leave_type || '-'}</span>
-                                )} />
+                                {/* <Column field="days" header="Days" style={{ minWidth: '6rem' }} body={(rowData) => (
+                                    <span className='me-2'>{rowData?.days || '1'} </span>
+                                )} /> */}
 
                                 <Column field="created_at" header="Request Date" style={{ minWidth: '9rem' }} body={(rowData) => (
                                     <span className='me-2'>{formatDate(rowData.created_at, DateFormat?.DATE_YEAR_WISE_SLASH_TIME_FORMAT) || '-'} </span>
@@ -511,14 +519,14 @@ export default function ManageCoustomer() {
                                 <Column field="is_active" data-pc-section="root" header="Status" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <>
                                         {rowData?.status == 1 ? (
-                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root"  >
+                                            <span className={`p-tag p-component  badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root"  >
                                                 <span className="p-tag-value" data-pc-section="value">Approved</span>
                                             </span>
                                         ) : rowData?.status == 2 ? (
-                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" >
+                                            <span className={`p-tag p-component  badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" >
                                                 <span className="p-tag-value" data-pc-section="value">Rejected</span>
                                             </span>
-                                        ) : <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.WARNING}`} data-pc-name="tag" data-pc-section="root" >
+                                        ) : <span className={`p-tag p-component  badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.WARNING}`} data-pc-name="tag" data-pc-section="root" >
                                             <span className="p-tag-value" data-pc-section="value">Pending</span>
                                         </span>
                                         }
@@ -608,94 +616,134 @@ export default function ManageCoustomer() {
                 </div>
             </div>
 
-            <div className={`modal custom-modal  ${addLeaveModal ? "fade show d-block " : "d-none"}`}
+            <div className={`modal custom-modal  ${addLeaveRequestModal ? "fade show d-block " : "d-none"}`}
                 id="addnotesmodal" tabIndex={-1} role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title fs-5">{'Add Leave Balance'} </h6>
-                            <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeLeaveModelFunc() }} />
+                            <h6 className="modal-title fs-5">{'Add Request Leave'} </h6>
+                            <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeLeaveRequestModelFunc() }} />
                         </div>
-
                         <div className="modal-body">
                             <form onSubmit={handleSubmit(onSubmitData)}>
                                 <div className="col-lg-12">
-                                    <div className="card-body p-4">
-                                        <div className="row g-3">
-                                            {/* Payment Type */}
-                                            <div className="col-12 col-md-6">
-                                                {/* <div className="mb-1">
-                                                    <label htmlFor="payment_status" className="form-label fw-semibold">
-                                                        Select Employee<span className="text-danger ms-1">*</span>
-                                                    </label>
-                                                    <div className="input-group border rounded-1">
-                                                        <select
-                                                            id="payment_status"
-                                                            className="form-control ps-2"
-                                                            autoComplete="off"
-                                                            style={{ fontWeight: '600' }}
-                                                            {...register(AstroInputTypesEnum.EMPLOYEE, {
-                                                                required: "Select employee",
-                                                                // onChange: (e) => changeStatusFunction(e.target.value),
-                                                            })}
-                                                        >
-                                                            {selectOptionCustomer(customerList)}
-                                                        </select>
-                                                    </div>
-                                                    <label className="errorc ps-1 pt-1">
-                                                        {errors[AstroInputTypesEnum.EMPLOYEE]?.message}
-                                                    </label>
-                                                </div> */}
-                                            </div>
+                                    <div className="card-body p-2">
+                                        <div className="row g-1">
 
-                                            <div className="col-12 col-md-6">
-                                                <div className="mb-1">
-                                                    <label htmlFor="payment_status" className="form-label fw-semibold">
-                                                        Leave Type<span className="text-danger ms-1">*</span>
+                                            <input
+                                                type="hidden"
+                                                value="some_default_value"
+                                                {...register(AstroInputTypesEnum.ID)}
+                                            />
+
+                                            {/* Date + Title side by side */}
+                                            <div className="row g-3">
+                                                {/* Date Field */}
+                                                <div className="col-md-4">
+                                                    <label htmlFor="dob1" className="form-label fw-semibold">
+                                                        Date <span className="text-danger ms-1">*</span>
                                                     </label>
-                                                    <div className="input-group border rounded-1">
-                                                        <select
-                                                            id="payment_status"
-                                                            className="form-control ps-2"
-                                                            autoComplete="off"
-                                                            style={{ fontWeight: '600' }}
-                                                            {...register(AstroInputTypesEnum.LEAVE_TYPE, {
-                                                                required: "Select leave type",
-                                                                // onChange: (e) => changeStatusFunction(e.target.value),
-                                                            })}
-                                                        >
-                                                            {selectOption(LEAVE_TYPE_LIST)}
-                                                        </select>
+                                                    <Controller
+                                                        name={AstroInputTypesEnum.DATE}
+                                                        control={control}
+                                                        rules={{ required: "Date is required" }}
+                                                        render={({ field }) => (
+                                                            <DatePicker
+                                                                id={AstroInputTypesEnum.DATE}
+                                                                picker="date"
+                                                                disabled={isLeaveRequestEdit}
+                                                                className="form-control custom-datepicker w-100"
+                                                                format={DateFormat?.DATE_FORMAT}
+                                                                // value={
+                                                                //     field.value ? dayjs(field.value, DateFormat?.DATE_FORMAT) : dayjs()
+                                                                // }
+                                                                onChange={(date) =>
+                                                                    field.onChange(
+                                                                        date ? dayjs(date).format(DateFormat?.DATE_FORMAT) : dayjs()
+                                                                    )
+                                                                }
+                                                            />
+                                                        )}
+                                                    />
+                                                    {errors[AstroInputTypesEnum.DATE] && (
+                                                        <small className="text-danger">
+                                                            {errors[AstroInputTypesEnum.DATE].message}
+                                                        </small>
+                                                    )}
+                                                </div>
+
+                                                {/* Title Field */}
+                                                <div className="col-md-8">
+                                                    <div className="mb-1">
+                                                        <label htmlFor="payment_status" className="form-label fw-semibold">
+                                                            Leave Type<span className="text-danger ms-1">*</span>
+                                                        </label>
+                                                        <div className="input-group border rounded-1">
+                                                            <select
+                                                                id="payment_status"
+                                                                className="form-control ps-2"
+                                                                autoComplete="off"
+                                                                style={{ fontWeight: '600' }}
+                                                                {...register(AstroInputTypesEnum.LEAVE_TYPE, {
+                                                                    required: "Select leave type",
+                                                                })}
+                                                                defaultValue={'compoff'}
+                                                                disabled
+                                                            >
+                                                                {selectOption(LEAVE_TYPE_LIST)}
+                                                            </select>
+                                                        </div>
+                                                        <label className="errorc ps-1 pt-1">
+                                                            {errors[AstroInputTypesEnum.LEAVE_TYPE]?.message}
+                                                        </label>
                                                     </div>
-                                                    <label className="errorc ps-1 pt-1">
-                                                        {errors[AstroInputTypesEnum.LEAVE_TYPE]?.message}
-                                                    </label>
                                                 </div>
                                             </div>
 
+                                            {/* Work REASON */}
                                             <div className="mb-1">
-                                                <label htmlFor="product_name" className="form-label fw-semibold">
-                                                    Leave Balance<span className="text-danger ms-1">*</span>
+                                                <label
+                                                    htmlFor="leave_reason"
+                                                    className="form-label fw-semibold"
+                                                >
+                                                    Reason<span className="text-danger ms-1">*</span>
                                                 </label>
                                                 <div className="input-group border rounded-1">
-                                                    <input
-                                                        type="number"
-                                                        step="0.01"
-                                                        className="form-control ps-2"
-                                                        placeholder="Enter leave balance"
-                                                        autoComplete='false'
-                                                        {...register(AstroInputTypesEnum.LEAVE_BALANCE, { required: "Enter leave balance" })}
+                                                    <Controller
+                                                        name={AstroInputTypesEnum.REASON}
+                                                        control={control}
+                                                        rules={{ required: "Enter reason" }}
+                                                        render={({ field }) => (
+                                                            <textarea
+                                                                {...field}
+                                                                className="form-control w-100"
+                                                                placeholder="Enter reason"
+                                                                rows={3}
+                                                            />
+                                                        )}
                                                     />
                                                 </div>
                                                 <label className="errorc ps-1 pt-1">
-                                                    {errors[AstroInputTypesEnum.LEAVE_BALANCE]?.message}
+                                                    {errors[AstroInputTypesEnum.REASON]?.message}
                                                 </label>
                                             </div>
 
+                                            {/* Footer */}
                                             <div className="modal-footer justify-content-center">
-                                                <button type="button" className="btn btn-danger" onClick={() => { closeLeaveModelFunc() }}>Cancel</button>
-                                                <button type="submit" className="btn btn-primary">Submit</button>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-danger"
+                                                    onClick={() => {
+                                                        closeLeaveRequestModelFunc();
+                                                    }}
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button type="submit" className="btn btn-primary">
+                                                    Submit
+                                                </button>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -705,7 +753,7 @@ export default function ManageCoustomer() {
                 </div>
             </div >
             {
-                addLeaveModal && (
+                addLeaveRequestModal && (
                     <div className="modal-backdrop fade show"></div>
                 )
             }
@@ -715,11 +763,11 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title fs-4">{selectedLeave?.actionType === "approved" ? 'Are you sure approve leave ?' : "Cancel Leave"} </h6>
+                            <h6 className="modal-title fs-4">{selectedLeave?.actionType === "approved" ? 'Are you sure approve leave ?' : "Cancel Request Leave"} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeActionModelFunc() }} />
                         </div>
                         <div className="modal-body">
-                            <form onSubmit={handleSubmit2(handleStatus)}>
+                            <form onSubmit={handleSubmit2(handleDelete)}>
                                 <div className="col-lg-12">
                                     <div className="card-body pt-4 p-2">
                                         <div className="row g-3">
@@ -749,7 +797,7 @@ export default function ManageCoustomer() {
                                                 <h5 className="fw-bold mb-2">Are you sure ?</h5>
                                                 <p className="text-muted mb-0">
                                                     Do you really want to
-                                                    <span className="fw-semibold "> cancel this leave</span> ?
+                                                    <span className="fw-semibold "> cancel requested leave</span> ?
                                                 </p>
                                             </div>
 
@@ -787,21 +835,17 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title fs-5"> Leave Details </h6>
+                            <h6 className="modal-title fs-5">Request Leave Details</h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeViewModelFunc() }} />
                         </div>
                         <div className="modal-body ">
                             <div className="row m-2">
                                 {[
-                                    { label: "Leave Type", value: selectedLeave?.leave_type },
-                                    { label: "Request Date", value: formatDate(selectedLeave?.created_at, DateFormat?.DATE_FORMAT) },
-                                    { label: "Days", value: selectedLeave?.days },
-                                    { label: "Start Date", value: formatDate(selectedLeave?.start_date, DateFormat?.DATE_FORMAT) },
-                                    { label: "End Date", value: formatDate(selectedLeave?.end_date, DateFormat?.DATE_FORMAT) },
-                                    { label: "", value: "" },
+                                    { label: "Date", value: momentNormalDateFormat(selectedLeave?.date, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' },
+                                    { label: "Leave Type", value: 'Comp off' },
                                 ].map((item, index) => (
 
-                                    <div key={index} className="col-md-4 mb-4 pb-2">
+                                    <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
 
                                         {item?.label == "Reason" ? (<>
                                             <p className="mb-1 fs-4">{item.label}</p>
@@ -809,8 +853,8 @@ export default function ManageCoustomer() {
                                         </>) :
                                             item.value &&
                                             <>
-                                                <p className="mb-1 fs-4">{item.label}</p>
-                                                <h6 className="fw-semibold mb-0 fs-5 text-capitalize">{item.value || 'N/A'}</h6>
+                                                <p className="mb-1 fs-3">{item.label}</p>
+                                                <h6 className="fw-semibold mb-0 fs-4 text-capitalize">{item.value || 'N/A'}</h6>
                                             </>
                                         }
                                     </div>
@@ -833,7 +877,6 @@ export default function ManageCoustomer() {
                                         </div>
                                     </>
                                 }
-
                             </div>
                         </div>
                     </div>

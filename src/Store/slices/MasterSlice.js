@@ -104,6 +104,17 @@ export const getlistLeavesThunk = createAsyncThunk("listLeaves", async (submitDa
     }
 });
 
+export const getlistLeavesRequestThunk = createAsyncThunk("listLeavesRequest", async (submitData, { dispatch }) => {
+    try {
+        // dispatch(setLoader(true))
+        const { data } = await API.listLeavesRequest(submitData);
+        // dispatch(setLoader(false))
+        return data;
+    } catch (error) {
+        throw error;
+    }
+});
+
 export const getEmpLeaveBalanceListThunk = createAsyncThunk("empLeaveBalanceList", async (submitData, { dispatch }) => {
     try {
         dispatch(setLoader(true))
@@ -227,9 +238,50 @@ export const getEMIChargeListThunk = createAsyncThunk("listEMICharge", async (su
     }
 });
 
+export const getBirthdayAndAnnivarsaryListThunk = createAsyncThunk("birthdayAndAnnivarsary", async (submitData, { dispatch }) => {
+    try {
+        // dispatch(setLoader(true))
+        const { data } = await API.birthdayAndAnnivarsary(submitData);
+        // dispatch(setLoader(false))
+        return data
+    } catch (error) {
+        throw error;
+    }
+});
+
+export const getDailyTeaThunk = createAsyncThunk("getDailyTeaThunk", async (submitData, { dispatch }) => {
+    try {
+        // dispatch(setLoader(true))
+        const { data } = await API.DailyDrinkList(submitData);
+        // dispatch(setLoader(false))
+        // const totalData = {
+        //     "employee_id": "01",
+        //     "employee_name": "Total",
+        //     "morning_tea": data?.total?.total_morning_tea,
+        //     "morning_coffee": data?.total?.total_morning_coffee,
+        //     "evening_tea": data?.total?.total_evening_tea,
+        //     "evening_coffee": data?.total?.total_evening_coffee
+        // };
+        // return [
+        //     ...data?.list,
+        //     totalData
+        // ];
+    } catch (error) {
+        throw error;
+    }
+});
+
 const initialState = {
     isLoading: false,
     userDetails: {
+        data: [],
+        error: null,
+    },
+    birthdayAndAnnivarsary: {
+        data: [],
+        error: null,
+    },
+    dailyTeaList: {
         data: [],
         error: null,
     },
@@ -242,6 +294,10 @@ const initialState = {
         error: null,
     },
     leaveList: {
+        data: [],
+        error: null,
+    },
+    leaveRequestList: {
         data: [],
         error: null,
     },
@@ -354,7 +410,6 @@ const masterSlice = createSlice({
         updateAttendanceList: (state, action) => {
             state.attendanceList.data = action.payload;
         },
-
         updateProcessingFeeList: (state, action) => {
             state.salaryList.data = action.payload;
         },
@@ -363,6 +418,9 @@ const masterSlice = createSlice({
         },
         updateLeaveList: (state, action) => {
             state.leaveList.data = action.payload;
+        },
+        updateLeaveRequestList: (state, action) => {
+            state.leaveRequestList.data = action.payload;
         },
         updateLeaveBalanceList: (state, action) => {
             state.empLeaveBalanceList.data = action.payload;
@@ -429,6 +487,20 @@ const masterSlice = createSlice({
                 state.userDetails.error = action.error.message;
             })
 
+            .addCase(getBirthdayAndAnnivarsaryListThunk.fulfilled, (state, action) => {
+                state.birthdayAndAnnivarsary.data = action.payload;
+            })
+            .addCase(getBirthdayAndAnnivarsaryListThunk.rejected, (state, action) => {
+                state.birthdayAndAnnivarsary.error = action.error.message;
+            })
+
+            .addCase(getDailyTeaThunk.fulfilled, (state, action) => {
+                state.dailyTeaList.data = action.payload;
+            })
+            .addCase(getDailyTeaThunk.rejected, (state, action) => {
+                state.dailyTeaList.error = action.error.message;
+            })
+
             .addCase(getDailyTaskListThunk.fulfilled, (state, action) => {
                 state.dailyTaskList.data = action.payload;
             })
@@ -450,6 +522,13 @@ const masterSlice = createSlice({
             })
             .addCase(getlistLeavesThunk.rejected, (state, action) => {
                 state.leaveList.error = action.error.message;
+            })
+
+            .addCase(getlistLeavesRequestThunk.fulfilled, (state, action) => {
+                state.leaveRequestList.data = action.payload;
+            })
+            .addCase(getlistLeavesRequestThunk.rejected, (state, action) => {
+                state.leaveRequestList.error = action.error.message;
             })
 
             .addCase(getEmpLeaveBalanceListThunk.fulfilled, (state, action) => {
@@ -528,5 +607,5 @@ const masterSlice = createSlice({
     },
 });
 
-export const { setLoader, setModalStatus, updatePostList, updateCategoryList, updateTicketList, updateAssignTaskList, updateProjectList, updateAttendanceList, updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateEMICahrgeList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateCouponCodeList, updateIntrestList, updateBlogList, updateDailyTaskList, updateBannerList, updateCelebrityList, updateLoanList, updateNewsList, updateFilterCategoryList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
+export const { setLoader, setModalStatus, updatePostList, updateCategoryList, updateTicketList, updateLeaveRequestList, updateAssignTaskList, updateProjectList, updateAttendanceList, updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateEMICahrgeList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateCouponCodeList, updateIntrestList, updateBlogList, updateDailyTaskList, updateBannerList, updateCelebrityList, updateLoanList, updateNewsList, updateFilterCategoryList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
 export default masterSlice.reducer;

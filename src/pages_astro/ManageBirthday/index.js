@@ -214,11 +214,11 @@ export default function ManageBirthday() {
                         {isBirthdayToday && (
                             <Badge
                                 style={{
-                                    backgroundColor: "#1f7494",
+                                    // backgroundColor: "#1f7494",
                                     fontSize: "0.75rem",
                                     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.15)",
                                 }}
-                                className="position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill text-white"
+                                className="position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill text-white badgecolor"
                             >
                                 🎉 Happy Birthday!
                             </Badge>

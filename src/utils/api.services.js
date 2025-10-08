@@ -50,14 +50,20 @@ export function login(request) {
     return AxiosClientApi.post(`/${EMPLOYEE_AUTH}/login`, request, true)
 }
 
+
+
 // ----------------------- HRMS Common  --------------------------------------------
 
 export function employeeGetDetails(request) {
     return AxiosClientApi.post(`/${COMMON}/employee_get_details`, request, true)
 }
 
+export function birthdayAndAnnivarsary(request) {
+    return AxiosClientApi.post(`/${COMMON}/birthday_anniversiry`, request, true)
+}
+
 export function uploadFile(request) {
-    return AxiosClientApi.post(`/${LOAN}/upload-file`, request, true)
+    return AxiosClientApi.post(`/${COMMON}/upload-file`, request, true)
 }
 
 // ----------------------- Customer ------------------------------------------------
@@ -90,6 +96,19 @@ export function editEmployee(request) {
 
 export function listLeaves(request) {
     return AxiosClientApi.post(`/${EMPLOYEE_LEAVE}/emp_leave_listing`, request)
+}
+
+
+export function addLeavesRequest(request) {
+    return AxiosClientApi.post(`/${EMPLOYEE_LEAVE}/add_compoff_request`, request)
+}
+
+export function deleteLeavesRequest(request) {
+    return AxiosClientApi.post(`/${EMPLOYEE_LEAVE}/add_compoff_request_delete`, request)
+}
+
+export function listLeavesRequest(request) {
+    return AxiosClientApi.post(`/${EMPLOYEE_LEAVE}/compoff_request_listing`, request)
 }
 
 export function addLeaves(request) {
@@ -178,6 +197,9 @@ export function saturdayList(request) {
 export function editSaturday(request) {
     return AxiosClientApi.post(`/${COMMON}/edit_week_off`, request, true)
 }
+
+
+
 
 // ---------------------------- Project Module  ------------------------------------------------------- 
 

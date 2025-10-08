@@ -4,6 +4,8 @@ export const PATHS = {
 
     HOLIDAYS_LIST: '/holidays_list',
     LEAVE_LIST: '/leave_list',
+    LEAVE_REQUEST_LIST: '/leave_request_list',
+
     ADD_LEAVE: '/leave_list/add_leave',
     ATTENDANCE_LIST: '/attendance_list',
     ADD_ATTENDANCE: '/attendance_list/add_attendance',

@@ -31149,6 +31149,8 @@ table.footable thead tr.footable-filtering th ul.dropdown-menu li .checkbox labe
   animation-name: zoomInRight;
 }
 
+
+
 @-webkit-keyframes zoomInUp {
   from {
     opacity: 0;

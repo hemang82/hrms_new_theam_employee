@@ -2,26 +2,26 @@ import React, { useState, useEffect, useRef } from 'react'
 import Swal from 'sweetalert2'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Controller, useForm } from 'react-hook-form';
-import Header from '../../layout/Header';
-import Slidebar from '../../layout/Slidebar';
-import Footer from '../../layout/Footer';
-import { Language, TOAST_ERROR, TOAST_SUCCESS, allowLettersAndSpaces } from '../../config/common';
-import { addEmployeeLeaves, AddDailyTask, AdminEmployeeList, departnmentList, EditDailyWork, } from '../../utils/api.services';
-import SubNavbar from '../../layout/SubNavbar';
+import Header from '../../../layout/Header';
+import Slidebar from '../../../layout/Slidebar';
+import Footer from '../../../layout/Footer';
+import { Language, TOAST_ERROR, TOAST_SUCCESS, allowLettersAndSpaces } from '../../../config/common';
+import { addEmployeeLeaves, AddDailyTask, AdminEmployeeList, departnmentList, EditDailyWork, } from '../../../utils/api.services';
+import SubNavbar from '../../../layout/SubNavbar';
 import categoryImage from '../../assets/Images/Group 48096953.png'
-import { uploadImageOnAWS } from '../../utils/aws.service';
-import Constatnt, { AwsFolder, Codes } from '../../config/constant';
+import { uploadImageOnAWS } from '../../../utils/aws.service';
+import Constatnt, { AwsFolder, Codes } from '../../../config/constant';
 import { SketchPicker } from 'react-color';
-import { formatDate, formatDateDyjs, getCommaSeparatedNames, getFileNameFromUrl, handelInputText, selectOption, selectOptionCustomer, textInputValidation, textValidation } from '../../config/commonFunction';
-import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, HALF_DAY_TYPE, InputRegex, InputTypesEnum, LEAVE_DAY, LEAVE_TYPE_LIST } from '../../config/commonVariable';
+import { formatDate, formatDateDyjs, getCommaSeparatedNames, getFileNameFromUrl, handelInputText, selectOption, selectOptionCustomer, textInputValidation, textValidation } from '../../../config/commonFunction';
+import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, HALF_DAY_TYPE, InputRegex, InputTypesEnum, LEAVE_DAY, LEAVE_TYPE_LIST } from '../../../config/commonVariable';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDailyTaskListThunk, getlistLeavesThunk, setLoader } from '../../Store/slices/MasterSlice';
+import { getDailyTaskListThunk, getlistLeavesThunk, setLoader } from '../../../Store/slices/MasterSlice';
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import CountryMobileNumber from '../../pages/CommonPages/CountryMobileNumber';
-import Spinner from '../../component/Spinner';
+import CountryMobileNumber from '../../../pages/CommonPages/CountryMobileNumber';
+import Spinner from '../../../component/Spinner';
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
-import { PATHS } from '../../Router/PATHS';
+import { PATHS } from '../../../Router/PATHS';
 
 export default function AddCustomer() {
     const navigation = useNavigate();
@@ -295,6 +295,7 @@ export default function AddCustomer() {
                                                             style={{ fontWeight: '600' }}
                                                             {...register(AstroInputTypesEnum.LEAVE_TYPE, {
                                                                 required: "Select leave type",
+                                                                // onChange: (e) => changeStatusFunction(e.target.value),
                                                             })}
                                                         >
                                                             {selectOption(LEAVE_TYPE_LIST)}

@@ -621,7 +621,7 @@
 
   .green_border {
     background: white !important;
-    border: 1px solid rgba(0, 128, 0, 0.397) !important;
+    border: 1px solid rgb(31 116 148) !important;
   }
 
   .custom_border_bottom {
@@ -738,7 +738,7 @@
     padding: 0 !important;
   }
 
-  .task-status  {
+  .task-status {
     /* min-width: max-content !important;
     max-width: max-content !important */
   }
@@ -764,4 +764,49 @@
 
   .ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
     background: #e6f4ffc2
+  }
+
+  .floating {
+    display: inline-block;
+    animation: float 2s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-6px);
+    }
+
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  .owl-theme .owl-dots {
+    text-align: center;
+    margin-top: 10px;
+    position: relative;
+    z-index: 5;
+    /* 🔥 ensure visible above canvas blur */
+  }
+
+  .owl-theme .owl-dots .owl-dot span {
+    width: 10px;
+    height: 10px;
+    background: #ccc;
+    margin: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  .owl-theme .owl-dots .owl-dot.active span {
+    background: linear-gradient(90deg, #ff4b2b, #ff6a00);
+    transform: scale(1.2);
+  }
+
+   .badgecolor {
+    background-color: #1f7494 !important
   }
