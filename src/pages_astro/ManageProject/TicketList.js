@@ -371,18 +371,7 @@ export default function AssignTaskList() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
-                                {/* <label className="form-label fw-semibold mb-1">&nbsp;</label> 
-                                <button
-                                    type="button"
-                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center w-100"
-                                    style={{ height: '40px' }}
-                                    onClick={() => navigat(PATHS.ADD_TICKET)}
-                                >
-                                    <IoAddCircleOutline className="me-1" style={{ fontSize: '1.2rem' }} />
-                                    <span className="fw-semibold">Add Ticket</span>
-                                </button> */}
-                            </div>
+
 
                             <div className="col-12 col-md-6 col-lg-2">
                                 <label className="d-block mb-1 fw-semibold">Start Date</label>
@@ -444,6 +433,18 @@ export default function AssignTaskList() {
                                 </div>
                             </div>
 
+                            <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
+                                <label className="form-label fw-semibold mb-1">&nbsp;</label>
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center w-100"
+                                    style={{ height: '40px' }}
+                                    onClick={() => navigat(PATHS.ADD_TICKET)}
+                                >
+                                    <IoAddCircleOutline className="me-1" style={{ fontSize: '1.2rem' }} />
+                                    <span className="fw-semibold">Add Ticket</span>
+                                </button>
+                            </div>
 
                         </div>
                     </div>
@@ -480,9 +481,6 @@ export default function AssignTaskList() {
                                     <span className='me-2'>{truncateWords(rowData?.title) || '-'} </span>
                                 )} />
 
-                                <Column field="task_name" header="Task Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
-                                    <span className='me-2'>{truncateWords(rowData?.task_name) || '-'} </span>
-                                )} />
 
                                 <Column field="project_name" header="Project Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
                                     <span className='me-2'>{truncateWords(rowData?.project_name) || '-'} </span>
@@ -521,10 +519,10 @@ export default function AssignTaskList() {
 
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
-                                        {/* 
+
                                         <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => navigat(PATHS?.EDIT_TICKET, { state: rowData })} >
                                             <i class="ti ti-edit fs-7"></i>
-                                        </a> */}
+                                        </a>
 
                                         <Link onClick={() => {
                                             openModelFunc(rowData);
@@ -534,9 +532,9 @@ export default function AssignTaskList() {
                                         >
                                             <i className="ti ti-eye fs-7" />
                                         </Link>
-                                        {/* <a className="text-dark delete ms-2 cursor_pointer text-custom-theam" onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedTicketList(rowData) }}>
+                                        <a className="text-dark delete ms-2 cursor_pointer text-custom-theam" onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedTicketList(rowData) }}>
                                             <i className="ti ti-trash fs-7 text-danger" />
-                                        </a> */}
+                                        </a>
                                     </div>
                                 )} />
 
@@ -566,8 +564,9 @@ export default function AssignTaskList() {
                                 {[
                                     { label: "Ticket Date", value: momentNormalDateFormat(selectedTicketList?.created_at, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' },
                                     { label: "Ticket Name", value: selectedTicketList?.title },
-                                    { label: "Task Name", value: selectedTicketList?.task_name },
+                                    // { label: "Task Name", value: selectedTicketList?.task_name },
                                     { label: "Project Name", value: selectedTicketList?.project_name || "-" },
+                                    { label: "Status", value: TaskStatus[selectedTicketList?.status]?.label || "-" },
                                     {
                                         label: "Team Member",
                                         value: selectedTicketList?.assigned_employee_names
@@ -582,7 +581,6 @@ export default function AssignTaskList() {
                                                 </ul>
                                             ) : "-"
                                     },
-                                    { label: "Status", value: TaskStatus[selectedTicketList?.status]?.label || "-" },
                                     { label: "Ticket Description", value: QuillContentRowWise(selectedTicketList?.description ? selectedTicketList?.description : "") },
                                 ].map((item, index) => (<>
                                     {
@@ -592,20 +590,33 @@ export default function AssignTaskList() {
                                                     item.value &&
                                                     <>
                                                         <p className="mb-1 fs-3">{item.label}</p>
-                                                        <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6>
+                                                        {/* <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6> */}
+                                                        <div className="fw-semibold mb-0 fs-3 text-capitalize ">{item.value || 'N/A'}</div>
                                                     </>
                                                 }
                                             </div>
-                                        </>) : (<>
-                                            <div key={index} className="col-12 mb-3 pb-2 border-1 border-bottom">
-                                                {
-                                                    item.value && <>
-                                                        <p className="mb-1 fs-3">{item.label}</p>
-                                                        <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6>
-                                                    </>
-                                                }
-                                            </div>
-                                        </>)
+                                        </>) : item.label != "Status" ? <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
+                                            <p className="mb-1 fs-3">{item.label}</p>
+                                            <span className={`p-tag p-component badge p-1 text-light fw-semibold px-3 status_font rounded-4 py-2 ${getAttendanceStatusColor(selectedTicketList?.status) || "bg-secondary"}`}
+                                                data-pc-name="tag"
+                                                data-pc-section="root" >
+                                                <span className="p-tag-value fs-2" data-pc-section="value">
+                                                    {getStatus(selectedTicketList?.status) || "-"}
+                                                </span>
+                                            </span>
+                                        </div> :
+
+                                            (<>
+                                                <div key={index} className="col-12 mb-3 pb-2 border-1 border-bottom">
+                                                    {
+                                                        item.value && <>
+                                                            <p className="mb-1 fs-3">{item.label}</p>
+                                                            {/* <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6> */}
+                                                            <div className="fw-semibold mb-0 fs-3 text-capitalize ">{item.value || 'N/A'}</div>
+                                                        </>
+                                                    }
+                                                </div>
+                                            </>)
                                     }
                                 </>))}
                                 {

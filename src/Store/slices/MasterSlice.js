@@ -389,7 +389,10 @@ const masterSlice = createSlice({
             state.projectList.data = action.payload;
         },
         updateAssignTaskList: (state, action) => {
+            const { user_id, status } = action.payload;
             state.assignTaskList.data = action.payload;
+            const user = state.assigned_users.find(u => u.user_id === user_id);
+            if (user) user.status = status; // direct mutation is fine with Immer
         },
         updateTicketList: (state, action) => {
             state.ticketList.data = action.payload;
@@ -439,6 +442,29 @@ const masterSlice = createSlice({
             state.emiChargesList.data = action.payload;
         },
 
+        // ✅ SOFT UPDATE one task's status in the list
+        updateAssignTaskStatus: (state, action) => {
+            const { taskId, taskStatus } = action.payload;
+            if (!state.assignTaskList?.data?.length) return;
+
+            state.assignTaskList.data = state.assignTaskList.data.map((task) =>
+                task.task_id == taskId
+                    ? { ...task, task_status: taskStatus }
+                    : task
+            );
+        },
+
+        updateTicketStatus: (state, action) => {
+            const { ticketId, status } = action.payload;
+            if (!state.ticketList?.data?.length) return;
+
+            state.ticketList.data = state.ticketList.data.map((ticket) =>
+                ticket.ticket_id == ticketId
+                    ? { ...ticket, status: status }
+                    : ticket
+            );
+        },
+
         // ------------------ Astro --------------------
 
         updateCategoryList: (state, action) => {
@@ -458,12 +484,15 @@ const masterSlice = createSlice({
         updateBannerList: (state, action) => {
             state.bannerList.data = action.payload;
         },
+
         updateCelebrityList: (state, action) => {
             state.celebrityList.data = action.payload;
         },
+
         updateNewsList: (state, action) => {
             state.newsList.data = action.payload;
         },
+
         updateNewsLatterList: (state, action) => {
             state.newsLatterList.data = action.payload;
         },
@@ -607,5 +636,5 @@ const masterSlice = createSlice({
     },
 });
 
-export const { setLoader, setModalStatus, updatePostList, updateCategoryList, updateTicketList, updateLeaveRequestList, updateAssignTaskList, updateProjectList, updateAttendanceList, updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateEMICahrgeList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateCouponCodeList, updateIntrestList, updateBlogList, updateDailyTaskList, updateBannerList, updateCelebrityList, updateLoanList, updateNewsList, updateFilterCategoryList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
+export const { setLoader, setModalStatus, updatePostList, updateCategoryList, updateTicketList, updateLeaveRequestList, updateTicketStatus, updateAssignTaskStatus, updateAssignTaskList, updateProjectList, updateAttendanceList, updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateEMICahrgeList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateCouponCodeList, updateIntrestList, updateBlogList, updateDailyTaskList, updateBannerList, updateCelebrityList, updateLoanList, updateNewsList, updateFilterCategoryList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
 export default masterSlice.reducer;

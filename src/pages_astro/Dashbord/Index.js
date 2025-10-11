@@ -530,6 +530,7 @@ const Index = () => {
                                         emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>Drink not found.</span>}
                                         style={{ tableLayout: 'fixed' }} // Fixed table layout
                                     >
+
                                         <Column
                                             field="employee_name"
                                             header="Employees"
@@ -577,60 +578,6 @@ const Index = () => {
 
                 </div>
 
-                {/* <div className="row">
-                    {dashboardCards?.map((card, index) => (
-                        <div className="col-12 col-sm-6 col-md-2 col-lg-3 " key={index}>
-                            <div className="card border-1 zoom-in them-light shadow-sm">
-                                <div className="card-body text-center">
-                                    <Link to={card.link}>
-                                        <img src={PUBLIC_URL + card.icon} width={35} height={35} className="mb-3" alt="Icon" />
-                                        <p className="fw-semibold fs-5 text-dark mb-1">{card.title}</p>
-                                        <h4 className="fw-semibold  text-dark mb-0">
-                                            {
-                                                <p className="fw-semibold fs-5 text-dark mb-1">{card.value}</p>
-                                            }
-                                        </h4>
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div> */}
-
-                {/* Row 2: Astrologer Ratings and Consultation Data */}
-                {/* <div className="row mt-3">
-                    <div className="col-lg-6">
-                        <div className="card shadow-sm">
-                            <div className="card-body">
-                                <h4 className="header-title mb-3">Astrologer Ratings</h4>
-                                <div>
-                                    <ReactECharts
-                                        option={ratingOption}
-                                        notMerge={true}
-                                        lazyUpdate={true}
-                                        theme={'light'}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="col-lg-6">
-                        <div className="card shadow-sm">
-                            <div className="card-body">
-                                <h4 className="header-title mb-3">Consultations Over Time</h4>
-                                <div>
-                                    <ReactECharts
-                                        option={consultationOption}
-                                        notMerge={true}
-                                        lazyUpdate={true}
-                                        theme={'light'}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> */}
             </div>
         </>
     );

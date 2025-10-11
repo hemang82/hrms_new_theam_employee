@@ -19,7 +19,7 @@ import { closeModel, disableFutureDates, formatDate, formatDateDyjs, formatIndia
 import Model from '../../../component/Model';
 import { DeleteComponent } from '../../CommonPages/CommonComponent';
 import Pagination from '../../../component/Pagination';
-import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS } from '../../../config/commonVariable';
+import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, InputRegex, LEAVE_DAY, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS } from '../../../config/commonVariable';
 import { RiDeleteBinLine, RiUserReceivedLine } from 'react-icons/ri';
 import { Controller, useForm } from 'react-hook-form';
 import { DatePicker, ConfigProvider } from 'antd';
@@ -338,7 +338,7 @@ export default function ManageCoustomer() {
     return (
         <>
             <div className="container-fluid mw-100">
-                <SubNavbar title={"Leave Request List"} header={'Leave Request List'} />
+                <SubNavbar title={"Comp Off Request"} header={'Comp Off Request'} />
 
                 <div className="widget-content searchable-container list">
                     {/* --------------------- start Contact ---------------- */}
@@ -385,7 +385,7 @@ export default function ManageCoustomer() {
                                         type="text"
                                         className="form-control ps-5  "
                                         id="input-search"
-                                        placeholder="Search leave request ..."
+                                        placeholder="Search Comp Off Request ..."
                                         value={globalFilterValue}
                                         onChange={onGlobalFilterChange}
                                     />
@@ -463,7 +463,7 @@ export default function ManageCoustomer() {
                                         <span className="me-1">
                                             <IoAddCircleOutline style={{ fontSize: '1.2rem' }} />
                                         </span>
-                                        <span className="fw-semibold text-nowrap">Add Leave Request</span>
+                                        <span className="fw-semibold text-nowrap">Add Comp Off Request</span>
                                     </Link>
                                 </div>
                             </div>
@@ -508,9 +508,9 @@ export default function ManageCoustomer() {
                                     <span className='me-2'>{formatDate(rowData.date, DateFormat?.DATE_FORMAT) || '-'} </span>
                                 )} />
 
-                                {/* <Column field="days" header="Days" style={{ minWidth: '6rem' }} body={(rowData) => (
+                                <Column field="days" header="Days" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.days || '1'} </span>
-                                )} /> */}
+                                )} />
 
                                 <Column field="created_at" header="Request Date" style={{ minWidth: '9rem' }} body={(rowData) => (
                                     <span className='me-2'>{formatDate(rowData.created_at, DateFormat?.DATE_YEAR_WISE_SLASH_TIME_FORMAT) || '-'} </span>
@@ -673,7 +673,7 @@ export default function ManageCoustomer() {
                                                 </div>
 
                                                 {/* Title Field */}
-                                                <div className="col-md-8">
+                                                <div className="col-md-4">
                                                     <div className="mb-1">
                                                         <label htmlFor="payment_status" className="form-label fw-semibold">
                                                             Leave Type<span className="text-danger ms-1">*</span>
@@ -698,7 +698,34 @@ export default function ManageCoustomer() {
                                                         </label>
                                                     </div>
                                                 </div>
+                                                <div className="col-md-4">
+
+                                                    <div className="mb-2">
+                                                        <label htmlFor="payment_status" className="form-label fw-semibold">
+                                                            Leave Day<span className="text-danger ms-1">*</span>
+                                                        </label>
+                                                        <div className="input-group border rounded-1">
+                                                            <select
+                                                                id="payment_status"
+                                                                className="form-control ps-2"
+                                                                autoComplete="off"
+                                                                style={{ fontWeight: '600' }}
+                                                                {...register(AstroInputTypesEnum.LEAVE_DAY, {
+                                                                    required: "Select leave day",
+                                                                    // onChange: (e) => changeStatusFunction(e.target.value),
+                                                                })}
+                                                            >
+                                                                {selectOption(LEAVE_DAY)}
+                                                            </select>
+                                                        </div>
+                                                        <label className="errorc ps-1 pt-1">
+                                                            {errors[AstroInputTypesEnum.LEAVE_DAY]?.message}
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
+
+
 
                                             {/* Work REASON */}
                                             <div className="mb-1">
@@ -763,7 +790,7 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title fs-4">{selectedLeave?.actionType === "approved" ? 'Are you sure approve leave ?' : "Cancel Request Leave"} </h6>
+                            <h6 className="modal-title fs-4">{selectedLeave?.actionType === "approved" ? 'Are you sure approve leave ?' : "Cancel Comp Off Requests"} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeActionModelFunc() }} />
                         </div>
                         <div className="modal-body">
@@ -797,7 +824,7 @@ export default function ManageCoustomer() {
                                                 <h5 className="fw-bold mb-2">Are you sure ?</h5>
                                                 <p className="text-muted mb-0">
                                                     Do you really want to
-                                                    <span className="fw-semibold "> cancel requested leave</span> ?
+                                                    <span className="fw-semibold "> cancel comp off requests</span> ?
                                                 </p>
                                             </div>
 
@@ -808,10 +835,10 @@ export default function ManageCoustomer() {
                                                     className="btn btn-danger"
                                                     onClick={closeActionModelFunc}
                                                 >
-                                                    No, Keep Leave
+                                                    No, Keep
                                                 </button>
                                                 <button type="submit" className="btn btn-primary">
-                                                    Yes, Cancel Leave
+                                                    Yes, Cancel
                                                 </button>
                                             </div>
                                         </div>
@@ -835,7 +862,7 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title fs-5">Request Leave Details</h6>
+                            <h6 className="modal-title fs-5">Comp Off Requests Details</h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeViewModelFunc() }} />
                         </div>
                         <div className="modal-body ">

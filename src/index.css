@@ -294,13 +294,13 @@
   } */
 
   /* Custom soft badge colors if Bootstrap subtle shades aren’t enough */
-  .status-blue {
-    background-color: #eaf1ff;
-    /* pastel blue */
-    color: #1F7494 !important;
-    /* border: 0.5px solid #1F7494 !important; */
-    /* dark blue text */
-  }
+  /* .status-blue { */
+  /* background-color: #eaf1ff; */
+  /* pastel blue */
+  /* color: #1F7494 !important; */
+  /* border: 0.5px solid #1F7494 !important; */
+  /* dark blue text */
+  /* } */
 
   .status-warning {
     background-color: #fff4e5;
@@ -324,8 +324,15 @@
     /* pastel orange background */
     /* border: 0.5px solid #ffa500 !important; */
     color: #ffa500 !important;
-
     /* orange text */
+  }
+
+  .status-blue {
+    background-color: #cce5ff;
+    /* pastel blue background */
+    /* border: 0.5px solid #1F7494 !important; */
+    color: #1F7494 !important;
+    /* dark blue text */
   }
 
   .status-success {
@@ -807,6 +814,10 @@
     transform: scale(1.2);
   }
 
-   .badgecolor {
+  .badgecolor {
     background-color: #1f7494 !important
+  }
+
+  .ant-select-dropdown {
+    z-index: 99999 !important;
   }

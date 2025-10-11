@@ -308,7 +308,7 @@ const Slidebar = () => {
                                     <span>
                                         <TbCalendarUser style={{ fontSize: '1.2rem' }} />
                                     </span>
-                                    <span className="hide-menu">Leave Request</span>
+                                    <span className="hide-menu">Comp Off Request</span>
                                 </Link>
                             </li>
 

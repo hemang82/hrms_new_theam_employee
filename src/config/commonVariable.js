@@ -1859,7 +1859,13 @@ export const getStatus = (status) => {
                                                                     status == "high" ? "High" :
                                                                         status == "low" ? "Low" :
                                                                             status == "medium" ? "Medium" :
-                                                                                status
+                                                                                status == "completed" ? "Completed" :
+                                                                                    status == "pending" ? "Pending" :
+                                                                                        status == "to_do" ? "To Do" :
+                                                                                            status == "in_progress" ? "In Progress" :
+                                                                                                status == "open" ? "Open" :
+                                                                                                    status == "resolved" ? "Resolved" :
+                                                                                                        status
 };
 
 export const getAttendanceStatusColor = (status) => {
@@ -1881,7 +1887,13 @@ export const getAttendanceStatusColor = (status) => {
                                                                 status == "high" ? STATUS_COLORS.DANGER :
                                                                     status == "low" ? STATUS_COLORS.WARNING :
                                                                         status == "medium" ? STATUS_COLORS.SUCCESS :
-                                                                            STATUS_COLORS.WARNING
+                                                                            status == "completed" ? STATUS_COLORS.SUCCESS :
+                                                                                status == "pending" ? STATUS_COLORS.YELLOW :
+                                                                                    status == "to_do" ? STATUS_COLORS.WARNING :
+                                                                                        status == "in_progress" ? STATUS_COLORS.BLUE :
+                                                                                            status == "open" ? STATUS_COLORS.DANGER :
+                                                                                                status == "resolved" ? STATUS_COLORS.SUCCESS :
+                                                                                                    STATUS_COLORS.WARNING
 };
 
 export const AttendanceStatus = {
@@ -1933,9 +1945,9 @@ export const TaskStatus = {
     to_do: {
         u_key: 'task_status',
         label: "To Do",
-        color: "#CCE5FF",       // light blue background
-        border: "#1F7494",
-        textColor: "#1F7494",
+        color: "#fff4e5",       // light blue background
+        border: "#ff9800",
+        textColor: "#ff9800",
     },
     in_progress: {
         u_key: 'task_status',

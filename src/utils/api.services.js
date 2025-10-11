@@ -225,6 +225,11 @@ export function listAssignTask(request) {
     return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/assign_task_listing`, request, true)
 }
 
+export function updateTaskStatus(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/update_task_status`, request, true)
+}
+
+
 export function addAssignTask(request) {
     return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/assign_task`, request, true)
 }
