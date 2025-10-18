@@ -483,7 +483,7 @@ export default function AssignTaskList() {
                             </div>
 
 
-                            <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
+                            {/* <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
                                 <label className="d-block mb-1 fw-semibold">Select Project</label>
                                 <div className="btn-group w-100">
                                     <button
@@ -497,7 +497,7 @@ export default function AssignTaskList() {
                                         {selectedOption?.name || 'Select Project'}
                                     </button>
                                     <ul className="dropdown-menu w-100">
-                                        {projectList?.map((option) => (
+                                        {projectList?.length > 0 && projectList?.map((option) => (
                                             <li key={option.value}>
                                                 <a
                                                     className="dropdown-item cursor_pointer text-black-50"
@@ -509,7 +509,7 @@ export default function AssignTaskList() {
                                         ))}
                                     </ul>
                                 </div>
-                            </div>
+                            </div> */}
 
 
                             <div className="col-12 col-md-6 col-lg-2">

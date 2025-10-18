@@ -98,9 +98,12 @@ export function listLeaves(request) {
     return AxiosClientApi.post(`/${EMPLOYEE_LEAVE}/emp_leave_listing`, request)
 }
 
-
 export function addLeavesRequest(request) {
     return AxiosClientApi.post(`/${EMPLOYEE_LEAVE}/add_compoff_request`, request)
+}
+
+export function availableLeaveBalanceList(request) {
+    return AxiosClientApi.post(`/${EMPLOYEE_LEAVE}/avilable_leave_balance_date`, request)
 }
 
 export function deleteLeavesRequest(request) {

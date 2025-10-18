@@ -125,6 +125,8 @@ export const AstroInputTypesEnum = {
     PASSWORD: 'password',
     PROFILE_IMAGE: 'aadhaar_file',
 
+    SELECTED_LEAVE_DATES : 'selected_leave_date',
+
 
     BANNER_EN: 'banner_en',
     BANNER_GU: 'banner_gu',
@@ -1704,6 +1706,12 @@ export const LEAVE_TYPE_LIST = [
     { key: "compoff", value: "Comp off" },
     { key: "LWP", value: "LWP" },
     { key: "birthday", value: "Birthday / Annivarsary" },
+];
+
+export const LEAVE_TYPE_LIST_AVAILABLE = [
+    { key: "0", value: "Used" },
+    { key: "1", value: "Full Day" },
+    { key: "2", value: "Half Day" },
 ];
 
 export const LEAVE_DAY = [

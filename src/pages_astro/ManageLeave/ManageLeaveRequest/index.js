@@ -239,9 +239,8 @@ export default function ManageCoustomer() {
             date: momentNormalDateFormat(data[AstroInputTypesEnum.DATE], DateFormat?.DATE_FORMAT, DateFormat?.DATE_DASH_TIME_FORMAT),
             // leave_type: data[AstroInputTypesEnum?.LEAVE_TYPE],
             reason: data[AstroInputTypesEnum.REASON],
+            leave_day_type: data[AstroInputTypesEnum.LEAVE_DAY]
         };
-        console.log('emp_leave_company: EMPLOYEE_STATUS[0]?.key,', sendRequest);
-
         addLeavesRequest(sendRequest).then((response) => {
             if (response?.code == Codes.SUCCESS) {
                 TOAST_SUCCESS(response?.message);
@@ -470,7 +469,6 @@ export default function ManageCoustomer() {
                         </div>
                     </div>
 
-
                     <div className="card p-3">
                         <div className="table-responsive">
                             <DataTable
@@ -613,6 +611,7 @@ export default function ManageCoustomer() {
 
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -698,8 +697,8 @@ export default function ManageCoustomer() {
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <div className="col-md-4">
 
+                                                <div className="col-md-4">
                                                     <div className="mb-2">
                                                         <label htmlFor="payment_status" className="form-label fw-semibold">
                                                             Leave Day<span className="text-danger ms-1">*</span>

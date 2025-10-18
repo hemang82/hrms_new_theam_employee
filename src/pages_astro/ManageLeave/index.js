@@ -143,7 +143,7 @@ export default function ManageCoustomer() {
                 admin_reason: data?.reason ? data?.reason : ""
             };
             const response = await approvedRejectLeaves(submitData);
-            if (response && response.code === Codes.SUCCESS) {
+            if (response.code == Codes.SUCCESS) {
                 TOAST_SUCCESS(response.message || "Success");
 
                 const updatedList = leaves?.map((item) => {
@@ -177,7 +177,6 @@ export default function ManageCoustomer() {
             dispatch(setLoader(false));
         }
     };
-
 
     const handleDelete = (is_true) => {
         if (is_true) {

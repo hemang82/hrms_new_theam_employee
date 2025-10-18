@@ -821,3 +821,7 @@
   .ant-select-dropdown {
     z-index: 99999 !important;
   }
+
+  .ant-select-selection-overflow{
+    padding: 4px 12px 4px 4px !important;
+  }

@@ -182,7 +182,7 @@ export default function AddTicket() {
                                                                     const selectedObjects = projectList?.filter((p) => (p.id == selectedIds));
                                                                     setSelectedProject(selectedObjects?.length > 0 ? selectedObjects[0]?.team?.split(",").map((id) => id.trim()) : []);
                                                                 }}
-                                                                options={projectList?.map((c) => ({
+                                                                options={projectList?.length > 0 && projectList?.map((c) => ({
                                                                     label: c.name,
                                                                     value: c.id,
                                                                 })) || []}

@@ -54,7 +54,7 @@ const Index = () => {
         responsive: {
             0: { items: 1 },
             576: { items: 1 },
-            992: { items: 2 },
+            992: { items: 1 },
         },
     });
 

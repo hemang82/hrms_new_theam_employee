@@ -6,20 +6,20 @@ import Header from '../../layout/Header';
 import Slidebar from '../../layout/Slidebar';
 import Footer from '../../layout/Footer';
 import { Language, TOAST_ERROR, TOAST_SUCCESS, allowLettersAndSpaces } from '../../config/common';
-import { addEmployeeLeaves, AddDailyTask, AdminEmployeeList, departnmentList, EditDailyWork, } from '../../utils/api.services';
+import { addEmployeeLeaves, AddDailyTask, AdminEmployeeList, departnmentList, EditDailyWork, availableLeaveBalanceList, } from '../../utils/api.services';
 import SubNavbar from '../../layout/SubNavbar';
 import categoryImage from '../../assets/Images/Group 48096953.png'
 import { uploadImageOnAWS } from '../../utils/aws.service';
 import Constatnt, { AwsFolder, Codes } from '../../config/constant';
 import { SketchPicker } from 'react-color';
 import { formatDate, formatDateDyjs, getCommaSeparatedNames, getFileNameFromUrl, handelInputText, selectOption, selectOptionCustomer, textInputValidation, textValidation } from '../../config/commonFunction';
-import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, HALF_DAY_TYPE, InputRegex, InputTypesEnum, LEAVE_DAY, LEAVE_TYPE_LIST } from '../../config/commonVariable';
+import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, HALF_DAY_TYPE, InputRegex, InputTypesEnum, LEAVE_DAY, LEAVE_TYPE_LIST, LEAVE_TYPE_LIST_AVAILABLE } from '../../config/commonVariable';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDailyTaskListThunk, getlistLeavesThunk, setLoader } from '../../Store/slices/MasterSlice';
+import { getDailyTaskListThunk, getlistLeavesThunk, getUserDetailsThunk, setLoader } from '../../Store/slices/MasterSlice';
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import CountryMobileNumber from '../../pages/CommonPages/CountryMobileNumber';
 import Spinner from '../../component/Spinner';
-import { DatePicker } from 'antd';
+import { DatePicker, Select, Space } from 'antd';
 import dayjs from 'dayjs';
 import { PATHS } from '../../Router/PATHS';
 
@@ -31,6 +31,10 @@ export default function AddCustomer() {
 
     const { adminEmployeeList: { data: customerList }, } = useSelector((state) => state.masterslice);
     const { userDetails: { data: userDetails }, } = useSelector((state) => state.masterslice);
+    // const { intrestTypeList: { data: intrestTypeList }, } = useSelector((state) => state.masterslice);
+
+    // const intrestTypeList = []
+    const [leaveBalanceList, setLeaveBalanceList] = useState([]);
 
     const [showPanCardImage, setShowPanCardImage] = useState(null);
     const [panCardFileName, setPanCardFileName] = useState('');
@@ -69,6 +73,21 @@ export default function AddCustomer() {
     }, [userDetails, customerList])
 
     useEffect(() => {
+        if (userDetails?.emp_id && (watch(AstroInputTypesEnum.LEAVE_TYPE) == "casual" || watch(AstroInputTypesEnum.LEAVE_TYPE) == "compoff")) {
+            availableLeaveBalanceList({
+                employee_id: userDetails?.emp_id?.toString() || "",
+                action: 'employee',
+                leave_type: watch(AstroInputTypesEnum.LEAVE_TYPE)
+            }).then((response) => {
+                if (response?.code == Codes.SUCCESS) {
+                    let responseDetails = response?.data;
+                    setLeaveBalanceList(responseDetails || []);
+                }
+            });
+        }
+    }, [userDetails, watch(AstroInputTypesEnum.LEAVE_TYPE)]);
+
+    useEffect(() => {
         if (userData) {
             dispatch(setLoader(true))
             AdminEmployeeList({ employee_id: userData?.id.toString() }).then((response) => {
@@ -93,10 +112,7 @@ export default function AddCustomer() {
                 }
             })
         }
-        console.log('userData?.departmentuserData?.department', userData?.department);
     }, [userData]);
-
-    console.log('userDetails', userDetails);
 
     var onChangeMobileNumber = (mobileNumber) => {
         setValue('mobile_number', mobileNumber)
@@ -110,6 +126,7 @@ export default function AddCustomer() {
 
     const onSubmitData = async (data) => {
         try {
+
             dispatch(setLoader(true))
             //             {
             //     "employee_id": "69",
@@ -120,6 +137,8 @@ export default function AddCustomer() {
             //     "reason": "For Testing ",
             //     "half_leave_type": "0"
             // }
+
+            const formattedDates = leaveBalanceList.filter(leave => data[AstroInputTypesEnum.SELECTED_LEAVE_DATES]?.includes(leave.id)).map(leave => formatDate(leave.created_at, DateFormat?.DATE_DASH_TIME_FORMAT));
             let request = {
                 employee_id: selectedEmployee?.id,
                 leave_type: data[AstroInputTypesEnum.LEAVE_TYPE],
@@ -127,7 +146,8 @@ export default function AddCustomer() {
                 start_date: formatDateDyjs(selectedStartDate, DateFormat?.DATE_LOCAL_DASH_TIME_FORMAT),
                 end_date: formatDateDyjs(selectedEndDate, DateFormat?.DATE_LOCAL_DASH_TIME_FORMAT),
                 half_leave_type: data[AstroInputTypesEnum.HALF_DAY_TYPE] ? data[AstroInputTypesEnum.HALF_DAY_TYPE] : 0,
-                reason: data[AstroInputTypesEnum.REASON] || ""
+                reason: data[AstroInputTypesEnum.REASON] || "",
+                leave_balance_date: formattedDates || []
             }
             if (userData) {
                 // request.employee_id = userData?.id?.toString();
@@ -145,6 +165,7 @@ export default function AddCustomer() {
                         TOAST_SUCCESS(response?.message)
                         navigation(PATHS?.LEAVE_LIST)
                         dispatch(getlistLeavesThunk({}));
+                        dispatch(getUserDetailsThunk()); 
                         dispatch(setLoader(false))
                     } else {
                         dispatch(setLoader(false))
@@ -152,7 +173,6 @@ export default function AddCustomer() {
                     }
                 })
             }
-
         } catch (error) {
             TOAST_ERROR('Somthing went wrong')
         }
@@ -193,7 +213,7 @@ export default function AddCustomer() {
         <>
             {<Spinner isActive={is_loding} message={'Please Wait'} />}
             <div className="container-fluid mw-100">
-                <SubNavbar title={userData ? 'Edit Employee' : 'Add Employee'} header={'Employee List'} subHeaderOnlyView={userData ? 'Edit Employee' : 'Add Employee'} />
+                <SubNavbar title={userData ? 'Edit Leave List' : 'Add Leave List'} header={'Add Leave List'} subHeaderOnlyView={userData ? 'Edit Leave List' : 'Add Leave List'} />
                 <div className="row">
                     {
                         selectedEmployee &&
@@ -214,9 +234,7 @@ export default function AddCustomer() {
                                             { label: "Compoff Leave", value: selectedEmployee?.compoff },
                                             {
                                                 label: "Total Leave",
-                                                value:
-                                                    (Number(selectedEmployee?.casual) || 0) +
-                                                    (Number(selectedEmployee?.compoff) || 0)
+                                                value: (Number(selectedEmployee?.casual) || 0) + (Number(selectedEmployee?.compoff) || 0)
                                             }
                                         ].map((item, index) => (
                                             <div className='col-12 col-sm-6 col-md-3 col-lg-4 attendance_card'>
@@ -254,33 +272,68 @@ export default function AddCustomer() {
                                         <div className='row col-12 col-md-12 '>
 
                                             <div className='col-md-6 '>
-                                                <div className="mb-4">
-                                                    <label htmlFor="gender1" className="form-label fw-semibold">
-                                                        Employee Name<span className="text-danger ms-1"></span>
-                                                    </label>
-                                                    <div className="input-group border rounded-1">
-                                                        <select
-                                                            id="gender1"
-                                                            className="form-control ps-2 p-2"
-                                                            autoComplete="nope"
-                                                            disabled
-                                                            {...register(AstroInputTypesEnum.EMPLOYEE, {
-                                                                required: "Select employee",
-                                                            })}
-                                                            onChange={(e) => {
-                                                                const selectedId = e.target.value;
-                                                                const selectedObj = customerList.find((c) => String(c.id) === String(selectedId));
-                                                                setSelectedEmployee(selectedObj || null);
-                                                                setValue(AstroInputTypesEnum?.EMPLOYEE_ID, selectedObj.employee_id)
-                                                            }}
-                                                        >
-                                                            <option value="">Select employee</option>
-                                                            {selectOptionCustomer(customerList)}
-                                                        </select>
+                                                <div className="row">
+                                                    {/* Employee Name */}
+                                                    <div className="col-md-6 col-12 mb-4">
+                                                        <label htmlFor="employeeName" className="form-label fw-semibold">
+                                                            Employee Name<span className="text-danger ms-1"></span>
+                                                        </label>
+                                                        <div className="input-group border rounded-1">
+                                                            <select
+                                                                id="employeeName"
+                                                                className="form-control ps-2 p-2"
+                                                                autoComplete="off"
+                                                                disabled
+                                                                {...register(AstroInputTypesEnum.EMPLOYEE, {
+                                                                    required: "Select employee",
+                                                                })}
+                                                                onChange={(e) => {
+                                                                    const selectedId = e.target.value;
+                                                                    const selectedObj = customerList.find(
+                                                                        (c) => String(c.id) === String(selectedId)
+                                                                    );
+                                                                    setSelectedEmployee(selectedObj || null);
+                                                                    setValue(
+                                                                        AstroInputTypesEnum?.EMPLOYEE_ID,
+                                                                        selectedObj?.employee_id || ""
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <option value="">Select employee</option>
+                                                                {selectOptionCustomer(customerList)}
+                                                            </select>
+                                                        </div>
+                                                        <label className="errorc ps-1 pt-1">
+                                                            {errors[AstroInputTypesEnum.EMPLOYEE]?.message}
+                                                        </label>
                                                     </div>
-                                                    <label className="errorc ps-1 pt-1">
-                                                        {errors[AstroInputTypesEnum.EMPLOYEE]?.message}
-                                                    </label>
+
+                                                    {/* Employee ID */}
+                                                    <div className="col-md-6 col-12 mb-4">
+                                                        <label htmlFor="employeeId" className="form-label fw-semibold">
+                                                            Employee ID<span className="text-danger ms-1"></span>
+                                                        </label>
+                                                        <div className="input-group border rounded-1">
+                                                            <input
+                                                                id="employeeId"
+                                                                name={AstroInputTypesEnum.EMPLOYEE_ID}
+                                                                type="text"
+                                                                className="form-control ps-2"
+                                                                placeholder="Enter employee id"
+                                                                autoComplete="off"
+                                                                disabled
+                                                                {...register(AstroInputTypesEnum.EMPLOYEE_ID, {
+                                                                    required: "Enter employee id",
+                                                                })}
+                                                                onChange={(e) =>
+                                                                    handleInputChange(AstroInputTypesEnum.EMPLOYEE_ID, e.target.value)
+                                                                }
+                                                            />
+                                                        </div>
+                                                        <label className="errorc ps-1 pt-1">
+                                                            {errors[AstroInputTypesEnum.EMPLOYEE_ID]?.message}
+                                                        </label>
+                                                    </div>
                                                 </div>
 
                                                 <div className="mb-4">
@@ -357,30 +410,6 @@ export default function AddCustomer() {
 
                                             <div className='col-md-6'>
 
-                                                <div className="mb-4">
-                                                    <label htmlFor="lastname" className="form-label fw-semibold">
-                                                        Employee ID<span className="text-danger ms-1"></span>
-                                                    </label>
-                                                    <div className="input-group border rounded-1">
-                                                        <input
-                                                            name={AstroInputTypesEnum.EMPLOYEE_ID}
-                                                            type="text"
-                                                            className="form-control ps-2"
-                                                            placeholder="Enter employee id"
-                                                            autoComplete='nope'
-                                                            disabled
-                                                            {...register(AstroInputTypesEnum.EMPLOYEE_ID, {
-                                                                required: "Enter employee id",
-                                                            })}
-                                                            onChange={(e) => handleInputChange(AstroInputTypesEnum.EMPLOYEE_ID, e.target.value)}
-                                                        />
-                                                    </div>
-                                                    <label className="errorc ps-1 pt-1">
-                                                        {errors[AstroInputTypesEnum.EMPLOYEE_ID]?.message}
-                                                    </label>
-                                                </div>
-
-
                                                 <div className="row mb-4 g-3"> {/* ✅ Bootstrap row with spacing */}
                                                     <div className="col-12 col-md-6">
                                                         <label htmlFor="dob1" className="form-label fw-semibold">
@@ -413,6 +442,128 @@ export default function AddCustomer() {
                                                     </div>
                                                 </div>
 
+                                                {/* {
+                                                    watch(AstroInputTypesEnum.LEAVE_DAY) && (watch(AstroInputTypesEnum.LEAVE_TYPE) == "casual" || watch(AstroInputTypesEnum.LEAVE_TYPE) == "compoff") &&
+                                                    <div className="mb-2">
+                                                        <label htmlFor="interest_type" className="form-label fw-semibold">
+                                                            Select Leave Date<span className="text-danger ms-1">*</span>
+                                                        </label>
+                                                        <Controller
+                                                            name={AstroInputTypesEnum.SELECTED_LEAVE_DATES}
+                                                            control={control}
+                                                            rules={{ required: "Select Leave Date" }}
+                                                            render={({ field }) => {
+                                                                const leaveDay = watch(AstroInputTypesEnum.LEAVE_DAY); // 👀 Watch for "half" or "full"
+                                                                const filteredList = leaveBalanceList?.filter((item) => leaveDay == "half" ? [1, 2].includes(item.is_available) : item.is_available == 1) || [];
+                                                                return (
+                                                                    <Select
+                                                                        mode="multiple"
+                                                                        style={{ width: "100%" }}
+                                                                        placeholder="Select Leave Date"
+                                                                        value={field.value || []}
+                                                                        onChange={(selectedIds) => {
+                                                                            field.onChange(selectedIds);
+                                                                            setValue(AstroInputTypesEnum.SELECTED_LEAVE_DATES, selectedIds);
+                                                                        }}
+
+                                                                        options={filteredList.map((c) => {
+
+                                                                            const leaveType = LEAVE_TYPE_LIST.find((item) => item.key == c.leave_type)?.value || c.leave_type;
+                                                                            const isAvailable = LEAVE_TYPE_LIST_AVAILABLE.find((item) => item.key == c.is_available)?.value || c.is_available;
+
+                                                                            return {
+                                                                                label: `${formatDate(c.created_at, DateFormat?.DATE_FORMAT) || '-'} (${leaveType} - ${isAvailable})`,
+                                                                                value: c.id || '-',
+                                                                                disabled: c.is_available == 0,
+                                                                            };
+                                                                        })}
+                                                                        optionRender={(option) => <Space>{option?.label}</Space>}
+                                                                        optionFilterProp="label"
+                                                                        className="border rounded-1"
+                                                                    />
+                                                                );
+                                                            }}
+                                                        />
+                                                        <label className="errorc ps-1 pt-1">{errors?.[AstroInputTypesEnum.SELECTED_LEAVE_DATES]?.message}</label>
+                                                    </div>
+                                                } */}
+
+
+                                                {
+                                                    watch(AstroInputTypesEnum.LEAVE_DAY) &&
+                                                    (watch(AstroInputTypesEnum.LEAVE_TYPE) == "casual" || watch(AstroInputTypesEnum.LEAVE_TYPE) == "compoff") && (
+                                                        <div className="mb-2">
+                                                            <label htmlFor="interest_type" className="form-label fw-semibold">
+                                                                Select Leave Date<span className="text-danger ms-1">*</span>
+                                                            </label>
+
+                                                            <Controller
+                                                                name={AstroInputTypesEnum.SELECTED_LEAVE_DATES}
+                                                                control={control}
+                                                                rules={{
+                                                                    required: "Select Leave Date",
+                                                                    validate: (selectedDates) => {
+                                                                        // const selectedStartDate = watch(AstroInputTypesEnum.START_DATE);
+                                                                        // const selectedEndDate = watch(AstroInputTypesEnum.END_DATE);
+
+                                                                        // ✅ Your existing formatted conversion
+                                                                        const startDate = selectedStartDate ? formatDateDyjs(selectedStartDate, DateFormat?.DATE_LOCAL_DASH_TIME_FORMAT) : null;
+                                                                        const endDate = selectedEndDate ? formatDateDyjs(selectedEndDate, DateFormat?.DATE_LOCAL_DASH_TIME_FORMAT) : null;
+
+                                                                        if (startDate && endDate) {
+                                                                            const start = new Date(startDate);
+                                                                            const end = new Date(endDate);
+
+                                                                            if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+                                                                                return "Invalid start or end date format.";
+                                                                            }
+
+                                                                            // ✅ Calculate inclusive day difference
+                                                                            const totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+                                                                            if (selectedDates?.length !== totalDays) {
+                                                                                return `Please select ${totalDays} date(s) to match the selected range`;
+                                                                            }
+
+                                                                        }
+                                                                        return true;
+                                                                    },
+                                                                }}
+                                                                render={({ field }) => {
+                                                                    const leaveDay = watch(AstroInputTypesEnum.LEAVE_DAY);
+                                                                    const filteredList = leaveBalanceList?.filter((item) => leaveDay == "half" ? [1, 2].includes(item.is_available) : item.is_available == 1) || [];
+                                                                    return (
+                                                                        <Select
+                                                                            mode="multiple"
+                                                                            style={{ width: "100%" }}
+                                                                            placeholder="Select Leave Date"
+                                                                            value={field.value || []}
+                                                                            onChange={(selectedIds) => {
+                                                                                field.onChange(selectedIds);
+                                                                                setValue(AstroInputTypesEnum.SELECTED_LEAVE_DATES, selectedIds);
+                                                                                trigger(AstroInputTypesEnum.SELECTED_LEAVE_DATES); // revalidate dynamically
+                                                                            }}
+                                                                            options={filteredList.map((c) => {
+                                                                                const leaveType = LEAVE_TYPE_LIST.find((item) => item.key == c.leave_type)?.value || c.leave_type;
+                                                                                const isAvailable = LEAVE_TYPE_LIST_AVAILABLE.find((item) => item.key == c.is_available)?.value || c.is_available;
+                                                                                return {
+                                                                                    label: `${formatDate(c.created_at, DateFormat?.DATE_FORMAT) || "-"} (${leaveType} - ${isAvailable})`, value: c.id || "-",
+                                                                                    disabled: c.is_available == 0,
+                                                                                };
+                                                                            })}
+                                                                            optionRender={(option) => <Space>{option?.label}</Space>}
+                                                                            optionFilterProp="label"
+                                                                            className="border rounded-1"
+                                                                        />
+                                                                    );
+                                                                }}
+                                                            />
+                                                            <label className="errorc ps-1 pt-1">
+                                                                {errors?.[AstroInputTypesEnum.SELECTED_LEAVE_DATES]?.message}
+                                                            </label>
+                                                        </div>
+                                                    )
+                                                }
                                                 <div className="mb-4">
                                                     <label htmlFor="product_name" className="form-label fw-semibold">
                                                         Leave Reason <span className="text-danger ms-1">*</span>
