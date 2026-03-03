@@ -34,6 +34,7 @@ import { uploadImageOnAWS } from '../../utils/aws.service';
 import { PATHS } from '../../Router/PATHS';
 import { BsQuestionOctagon } from 'react-icons/bs';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { MdCancel } from 'react-icons/md';
 
 export default function ManageCoustomer() {
 
@@ -139,9 +140,11 @@ export default function ManageCoustomer() {
         try {
             let submitData = {
                 leaveId: selectedLeave?.leave_id,
-                status: selectedLeave?.actionType === "approved" ? '1' : '2',
+                status: selectedLeave?.actionType === "approved" ? '1' : '3',
                 admin_reason: data?.reason ? data?.reason : ""
             };
+
+            // return
             const response = await approvedRejectLeaves(submitData);
             if (response.code == Codes.SUCCESS) {
                 TOAST_SUCCESS(response.message || "Success");
@@ -150,7 +153,7 @@ export default function ManageCoustomer() {
                     if (selectedLeave?.leave_id === item.leave_id) {
                         return {
                             ...item,
-                            status: selectedLeave?.actionType === "approved" ? '1' : '2',
+                            status: selectedLeave?.actionType === "approved" ? '1' : '3',
                             admin_reason: data?.reason ? data?.reason : ""
                         };
                     }
@@ -509,17 +512,21 @@ export default function ManageCoustomer() {
 
                                 <Column field="is_active" data-pc-section="root" header="Status" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <>
-                                        {rowData?.status == 1 ? (
-                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root"  >
-                                                <span className="p-tag-value" data-pc-section="value">Approved</span>
+                                        {rowData?.user_status == 3 ?
+                                            <span className={`p-tag p-component  badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" >
+                                                <span className="p-tag-value" data-pc-section="value">Cancel</span>
                                             </span>
-                                        ) : rowData?.status == 2 ? (
-                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" >
-                                                <span className="p-tag-value" data-pc-section="value">Rejected</span>
+                                            : rowData?.status == 1 ? (
+                                                <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root"  >
+                                                    <span className="p-tag-value" data-pc-section="value">Approved</span>
+                                                </span>
+                                            ) : rowData?.status == 2 ? (
+                                                <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" >
+                                                    <span className="p-tag-value" data-pc-section="value">Rejected</span>
+                                                </span>
+                                            ) : <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.WARNING}`} data-pc-name="tag" data-pc-section="root" >
+                                                <span className="p-tag-value" data-pc-section="value">Pending</span>
                                             </span>
-                                        ) : <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.WARNING}`} data-pc-name="tag" data-pc-section="root" >
-                                            <span className="p-tag-value" data-pc-section="value">Pending</span>
-                                        </span>
                                         }
                                     </>
                                 )} />
@@ -578,18 +585,18 @@ export default function ManageCoustomer() {
                                         >
                                             <i className="ti ti-eye fs-7" />
                                         </Link>
-                                        {rowData?.status == 0 ?
+                                        {rowData?.status == 0 && rowData?.user_status != 3 ?
                                             <a
                                                 className="text-danger delete ms-2 cursor_pointer"
                                                 onClick={() => { openActionModelFunc(rowData, 'cancel') }}
                                             >
-                                                <i className="ti ti-trash fs-7"></i>
+                                                <i className="ti ti-x fs-7"></i>
                                             </a>
-
                                             : <a
                                                 className="text-danger delete ms-2 disabled-status"
                                             >
-                                                <i className="ti ti-trash fs-7"></i>
+                                                <i className="ti ti-x fs-7"></i>
+
                                             </a>
                                         }
                                     </div>
@@ -741,7 +748,8 @@ export default function ManageCoustomer() {
                                                         border: "2px solid #1F7494",
                                                     }}
                                                 >
-                                                    <RiDeleteBinLine color="#1F7494" size={32} />
+                                                    {/* <RiDeleteBinLine color="#1F7494" size={32} /> */}
+                                                    <MdCancel color="#1F7494" size={32} />
                                                 </div>
 
                                                 {/* Confirmation Text */}

@@ -165,7 +165,7 @@ export default function AddCustomer() {
                         TOAST_SUCCESS(response?.message)
                         navigation(PATHS?.LEAVE_LIST)
                         dispatch(getlistLeavesThunk({}));
-                        dispatch(getUserDetailsThunk()); 
+                        dispatch(getUserDetailsThunk());
                         dispatch(setLoader(false))
                     } else {
                         dispatch(setLoader(false))
@@ -405,7 +405,6 @@ export default function AddCustomer() {
                                                         </label>
                                                     </div>
                                                 }
-
                                             </div>
 
                                             <div className='col-md-6'>
@@ -488,10 +487,8 @@ export default function AddCustomer() {
                                                     </div>
                                                 } */}
 
-
                                                 {
-                                                    watch(AstroInputTypesEnum.LEAVE_DAY) &&
-                                                    (watch(AstroInputTypesEnum.LEAVE_TYPE) == "casual" || watch(AstroInputTypesEnum.LEAVE_TYPE) == "compoff") && (
+                                                    watch(AstroInputTypesEnum.LEAVE_DAY) && (watch(AstroInputTypesEnum.LEAVE_TYPE) == "casual" || watch(AstroInputTypesEnum.LEAVE_TYPE) == "compoff") && (
                                                         <div className="mb-2">
                                                             <label htmlFor="interest_type" className="form-label fw-semibold">
                                                                 Select Leave Date<span className="text-danger ms-1">*</span>
@@ -503,10 +500,11 @@ export default function AddCustomer() {
                                                                 rules={{
                                                                     required: "Select Leave Date",
                                                                     validate: (selectedDates) => {
+
                                                                         // const selectedStartDate = watch(AstroInputTypesEnum.START_DATE);
                                                                         // const selectedEndDate = watch(AstroInputTypesEnum.END_DATE);
-
                                                                         // ✅ Your existing formatted conversion
+
                                                                         const startDate = selectedStartDate ? formatDateDyjs(selectedStartDate, DateFormat?.DATE_LOCAL_DASH_TIME_FORMAT) : null;
                                                                         const endDate = selectedEndDate ? formatDateDyjs(selectedEndDate, DateFormat?.DATE_LOCAL_DASH_TIME_FORMAT) : null;
 
@@ -524,14 +522,25 @@ export default function AddCustomer() {
                                                                             if (selectedDates?.length !== totalDays) {
                                                                                 return `Please select ${totalDays} date(s) to match the selected range`;
                                                                             }
-
                                                                         }
                                                                         return true;
                                                                     },
                                                                 }}
                                                                 render={({ field }) => {
+
                                                                     const leaveDay = watch(AstroInputTypesEnum.LEAVE_DAY);
-                                                                    const filteredList = leaveBalanceList?.filter((item) => leaveDay == "half" ? [1, 2].includes(item.is_available) : item.is_available == 1) || [];
+                                                                    // const filteredList = leaveBalanceList?.filter((item) => leaveDay == "half" ?
+                                                                    //     [0, 1, 2].includes(item.is_available)
+                                                                    //     : [0, 1].includes(item.is_available)) || [];
+
+                                                                    const hasTwo = leaveBalanceList?.some(item => Number(item.is_available) === 2);
+                                                                    const filteredList = leaveBalanceList?.filter((item) => leaveDay == "half"
+                                                                        ? hasTwo
+                                                                            ? Number(item.is_available) == 2
+                                                                            : [0, 1, 2].includes(Number(item.is_available))
+                                                                        : [0, 1].includes(Number(item.is_available))
+                                                                    ) || [];
+
                                                                     return (
                                                                         <Select
                                                                             mode="multiple"
@@ -564,6 +573,7 @@ export default function AddCustomer() {
                                                         </div>
                                                     )
                                                 }
+
                                                 <div className="mb-4">
                                                     <label htmlFor="product_name" className="form-label fw-semibold">
                                                         Leave Reason <span className="text-danger ms-1">*</span>
@@ -594,6 +604,7 @@ export default function AddCustomer() {
                                                 <button type='button' className="btn btn-danger m-2" onClick={() => { navigation(PATHS.LEAVE_LIST) }}>Cancel</button>
                                                 <button type='submit' className="btn btn-primary" >Submit</button>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>

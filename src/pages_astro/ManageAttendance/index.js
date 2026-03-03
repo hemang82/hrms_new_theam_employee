@@ -38,6 +38,7 @@ import Spinner from '../../component/Spinner';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import cloneDeep from "lodash/cloneDeep";
+import { TbMessageReply } from 'react-icons/tb';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -104,7 +105,7 @@ export default function ManageAttendance() {
     const [proofFileName, setProofFileName] = useState('');
     const [is_loding, setIs_loading] = useState(false);
     const [updatedAttendanceList, setUpdateAttendanceList] = useState([]);
-    const [attendanceEditModal, setAttendanceEditModel] = useState(false);
+    const [attendanceRequestModal, setAttendanceRequestModel] = useState(false);
     const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
 
     useEffect(() => {
@@ -280,7 +281,7 @@ export default function ManageAttendance() {
     }
 
     const openAttendanceModel = (attendanceData) => {
-        setAttendanceEditModel(true)
+        setAttendanceRequestModel(true)
         setSelectedAttendance(attendanceData)
 
         // const formattedBreaks = attendanceData?.breaks?.map(b => ({
@@ -300,7 +301,7 @@ export default function ManageAttendance() {
     }
 
     const closeAttendanceModel = () => {
-        setAttendanceEditModel(false)
+        setAttendanceRequestModel(false)
         setSelectedAttendance({})
         reset()
     }
@@ -389,6 +390,7 @@ export default function ManageAttendance() {
                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
                                 </div>
                             </div>
+
                             {/* <div className="col-12 col-md-6 col-lg-2 d-flex flex-column"> */}
                             {/* <label className="form-label fw-semibold mb-1">Employees Filter</label>
                                 <div className="dropdown w-100">
@@ -586,9 +588,28 @@ export default function ManageAttendance() {
                                     <span className='me-2'>{rowData?.checkOutTimes[0]?.length > 0 ? momentTimeFormate(rowData?.checkOutTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-"} </span>
                                 )} />
 
-                                <Column field="checkInTimes" header="Work Hours" style={{ minWidth: '10rem' }} body={(rowData) => (
+                                {/* <Column field="checkInTimes" header="Work Hours" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <span className=''>{rowData?.checkInTimes[0]?.length > 0 ? getWorkingHours(rowData?.checkInTimes[0], rowData?.checkOutTimes[0], getBreakMinutes(rowData?.breaks?.length > 0 ? rowData?.breaks : [] || 0)) || '-' : "-"} </span>
-                                )} />
+                                )} /> */}
+
+                                <Column
+                                    field="checkInTimes"
+                                    header="Work Hours"
+                                    style={{ minWidth: "10rem" }}
+                                    body={(rowData) => {
+                                        const checkIns = rowData?.checkInTimes || [];
+                                        const checkOuts = rowData?.checkOutTimes || [];
+                                        const breaks = rowData?.breaks || [];
+                                        const isToday = new Date(rowData?.date).toDateString() === new Date().toDateString();
+                                        // Condition: If today and no checkout → show "-"
+                                        if (!isToday && checkOuts.length === 0) {
+                                            return <span>-</span>;
+                                        }
+                                        // Final calculation
+                                        const workHours = getWorkingHours(checkIns[0], checkOuts[0], getBreakMinutes(breaks.length > 0 ? breaks : [])) || "-";
+                                        return <span>{workHours}</span>;
+                                    }}
+                                />
 
                                 <Column field="type" sortable data-pc-section="root" header="Day Type" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <>
@@ -619,28 +640,33 @@ export default function ManageAttendance() {
                                 )} />
 
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
-                                    <div className="action-btn">
-
-                                        {/* <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => navigat(PATHS?.EDIT_ATTENDANCE, { state: rowData })} >
-                                            <i class="ti ti-edit fs-7"></i>
-                                        </a> */}
-
-                                        {/* <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
-                                            <i class="ti ti-edit fs-7"></i>
-                                        </a> */}
-
-                                        <Link onClick={() => {
-                                            if (rowData?.breaks?.length > 0) {
-                                                openModelFunc(rowData);
-                                            }
-                                        }}
-                                            state={rowData}
-                                            className={`text-info edit ${rowData?.breaks?.length > 0 ? "cursor_pointer text-custom-theam" : "disabled-status"}`}
+                                    <div className="action-btn d-flex align-items-center">
+                                        {/* Message / Reply Action */}
+                                        {/* <a
+                                            className="text-custom-theme me-2 cursor-pointer text-custom-theam"
+                                            onClick={() => openAttendanceModel(rowData)}
                                         >
-                                            <i className="ti ti-eye fs-7" />
-                                        </Link>
+                                            <TbMessageReply style={{ fontSize: '1.5rem' }} />
+                                        </a> */}
 
+                                        {/* View Break Details */}
+                                        <Link
+                                            onClick={() => {
+                                                if (rowData?.breaks?.length > 0) {
+                                                    openModelFunc(rowData);
+                                                }
+                                            }}
+                                            state={rowData}
+                                            className={`edit me-2 text-custom-theam${rowData?.breaks?.length > 0
+                                                ? 'cursor-pointer text-custom-theam'
+                                                : 'disabled-status text-muted'
+                                                }`}
+                                        >
+                                            <i className="ti ti-eye fs-7"></i>
+                                        </Link>
                                     </div>
+
+
                                 )} />
                             </DataTable>
 
@@ -766,13 +792,13 @@ export default function ManageAttendance() {
                 )
             }
 
-            <div className={`modal custom-modal  ${attendanceEditModal ? "fade show d-block " : "d-none"}`}
+            <div className={`modal custom-modal  ${attendanceRequestModal ? "fade show d-block " : "d-none"}`}
                 id="addnotesmodal" tabIndex={-1} role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
 
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h3 className="modal-title fs-5">{attendanceEditModal ? 'Edit Attendance Details' : 'Add Attendance Details'} </h3>
+                            <h3 className="modal-title fs-5">{attendanceRequestModal ? 'Edit Attendance Details' : 'Add Attendance Details'} </h3>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeAttendanceModel() }} />
                         </div>
 
@@ -1028,7 +1054,7 @@ export default function ManageAttendance() {
                 </div>
             </div >
             {
-                attendanceEditModal && (
+                attendanceRequestModal && (
                     <div className="modal-backdrop fade show"></div>
                 )
             }

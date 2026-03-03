@@ -15,7 +15,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getDailyTaskListThunk, setLoader, updateDailyTaskList } from '../../Store/slices/MasterSlice';
 import Constatnt, { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, dayjsDateFormat, disableFutureDates, formatDate, formatDateDyjs, getAllStatusObject, getLoanStatusObject, momentDateFormat, momentNormalDateFormat, openModel, QuillContentRowWise, textInputValidation } from '../../config/commonFunction';
+import { closeModel, dayjsDateFormat, disableFutureDates, ExportToExcel, formatDate, formatDateDyjs, getAllStatusObject, getLoanStatusObject, momentDateFormat, momentNormalDateFormat, openModel, QuillContentRowWise, textInputValidation } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
@@ -199,10 +199,70 @@ export default function ManageWorkUpdate() {
         }
     };
 
+    function htmlToPlainText(html, forExcel = false) {
+        if (!html) return '';
+
+        let content = html;
+
+        // Handle line breaks from Quill
+        content = content.replace(/<br\s*\/?>/gi, '\n');
+
+        // Newlines after block elements
+        content = content.replace(/<\/(p|div|h[1-6])>/gi, '\n');
+
+        // Add line breaks around lists
+        content = content.replace(/<(ul|ol)[^>]*>/gi, '\n');
+        content = content.replace(/<\/(ul|ol)>/gi, '\n');
+
+        // Bullet points for <li>
+        content = content.replace(/<li[^>]*>/gi, '• ');
+
+        // Create a temporary DOM node
+        const tmp = document.createElement('div');
+        tmp.innerHTML = content;
+
+        // Extract text
+        let text = tmp.textContent || tmp.innerText || '';
+
+        // Normalize multiple newlines
+        text = text.replace(/\n{2,}/g, '\n');
+
+        // Trim extra spaces
+        text = text.trim();
+
+        // Excel is happier with CRLF line endings (optional but nice)
+        if (forExcel) {
+            text = text.replace(/\n/g, '\r\n');
+        }
+
+        return text;
+    }
+
+    const handleExportApiCall = async () => {
+        dispatch(setLoader(true));
+        let submitData = {
+            search: globalFilterValue
+        }
+        const salaryData = dailyTaskList?.map((item, index) => ({
+            id: index + 1,
+            Date: momentNormalDateFormat(item?.date, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-',
+            Title: `${item.title || '-'}`,
+            Description: htmlToPlainText(item?.description || '', true),
+        }));
+        return { code: 1, data: salaryData }
+    };
+
+    const handleExportToExcelManage = async () => {
+        const { code, data } = await handleExportApiCall();
+        if (code == Codes.SUCCESS) {
+            ExportToExcel(data, 'Work Update List');
+        }
+        dispatch(setLoader(false));
+    };
+
     return (
         <>
             <div className="container-fluid mw-100">
-
                 <SubNavbar title={"Daily Work Update List"} header={'Daily Work Update List'} />
 
                 <div className="widget-content searchable-container list">
@@ -223,7 +283,8 @@ export default function ManageWorkUpdate() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0">
+                            <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0" style={{ cursor: 'pointer' }} onClick={() => { handleExportToExcelManage() }}>
+                                Export
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-2">
