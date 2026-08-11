@@ -229,6 +229,9 @@ export function listAssignTask(request) {
 }
 
 export function updateTaskStatus(request) {
+
+    // console.log("request",request);
+    
     return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/update_task_status`, request, true)
 }
 

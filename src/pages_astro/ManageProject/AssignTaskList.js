@@ -82,6 +82,9 @@ export default function AssignTaskList() {
     const [updatedAssignTaskList, setUpdateAssignTaskList] = useState([]);
     const [projectEditModal, setProjectEditModel] = useState(false);
     const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
+    const auth = JSON.parse(localStorage.getItem(Constatnt.AUTH_KEY));
+    
+    console.log("auth", auth);
 
     useEffect(() => {
         const request = {
@@ -293,7 +296,8 @@ export default function AssignTaskList() {
             console.log(`Status changed to: ${value} ${taskId}`);
             updateTaskStatus({
                 task_id: rowData?.task_id,
-                task_status: value
+                task_status: value,
+                user_ids: auth?.id
             }).then((response) => {
                 if (response?.code == Codes.SUCCESS) {
 
@@ -363,7 +367,7 @@ export default function AssignTaskList() {
             updateTaskStatus({
                 user_status: value,
                 task_id: taskData?.task_id,
-                user_ids: userData?.user_id
+                user_ids: auth?.id
             }).then((response) => {
                 if (response?.code == Codes.SUCCESS) {
                     TOAST_SUCCESS(response?.message);
@@ -583,10 +587,25 @@ export default function AssignTaskList() {
 
                                 <Column
                                     field="task_status"
-                                    header="Status"
+                                    header="Task Status"
                                     sortable
                                     style={{ minWidth: '10rem' }}
-                                    body={(rowData) => <UserStatusColumn taskData={rowData} userData={findUserById(rowData?.assigned_users, 69)} />}
+                                    body={(rowData) => {
+                                        const status = TaskStatus[rowData?.task_status || 'open'];
+                                        return (
+                                            <span className={`p-tag p-component badge p-1 fw-semibold px-3 status_font rounded-4 py-2`}
+                                                style={{ backgroundColor: status?.color || '#eee', color: status?.textColor || '#000' }}
+                                            >
+                                                <span className="p-tag-value fs-2">{status?.label || rowData?.task_status || "-"}</span>
+                                            </span>
+                                        )
+                                    }}
+                                />
+
+                                <Column
+                                    header="User Action"
+                                    style={{ minWidth: '10rem' }}
+                                    body={(rowData) => <UserStatusColumn taskData={rowData} userData={findUserById(rowData?.assigned_users,  auth?.id)} />}
                                 />
 
                                 <Column field="priority" sortable data-pc-section="root" header="Priority" style={{ minWidth: '8rem' }} body={(rowData) => (
@@ -629,6 +648,7 @@ export default function AssignTaskList() {
 
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -646,7 +666,7 @@ export default function AssignTaskList() {
                             <div className="row m-2">
                                 {[
                                     { label: "Task Title", value: selectedAssignTask?.title },
-                                    { label: "Task Status", value: <UserStatusColumn taskData={selectedAssignTask} userData={findUserById(selectedAssignTask?.assigned_users, 69)} /> },// <StatusColumn rowData={selectedAssignTask} /> }, //TaskStatus[selectedAssignTask?.status]?.label || "-" },
+                                    { label: "Task Status", value: (() => { const s = TaskStatus[selectedAssignTask?.task_status || 'open']; return <span className="p-tag p-component badge p-1 fw-semibold px-3 status_font rounded-4 py-2" style={{ backgroundColor: s?.color || '#eee', color: s?.textColor || '#000' }}><span className="p-tag-value fs-2">{s?.label || selectedAssignTask?.task_status || "-"}</span></span>; })() },
                                     { label: "Project Name", value: selectedAssignTask?.project_name },
                                     { label: "Assign Date", value: momentNormalDateFormat(selectedAssignTask?.created_at, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' },
                                     // { label: "Deadline Date", value: momentNormalDateFormat(selectedAssignTask?.due_date, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' },
